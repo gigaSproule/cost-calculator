@@ -1,29 +1,72 @@
-const TRANSACTION_FEE: f32 = 0.065;
-const PAYMENT_PROCESSING_PERCENTAGE: f32 = 0.04;
-const PAYMENT_PROCESSING_FEE: f32 = 0.2;
-const OFFSITE_ADS_FEE: f32 = 0.15;
-const LISTING_FEE: f32 = 0.15; // Actually $0.20 USD, but need it in GBP
-const MINIMUM_WAGE: f32 = 10.42;
+use std::{io, process::exit};
+
+mod calculator;
 
 fn main() {
-    let sale: f32 = 10 as f32;
-    let transaction_cost = sale * TRANSACTION_FEE;
-    let payment_processing_fee = (sale * PAYMENT_PROCESSING_PERCENTAGE) + PAYMENT_PROCESSING_FEE;
-    let offsite_ads_fee = sale * OFFSITE_ADS_FEE;
-    let total_fees = transaction_cost + payment_processing_fee + offsite_ads_fee + LISTING_FEE;
-    let actual_revenue = sale - total_fees;
-    let percentage_kept = (actual_revenue / sale) * 100.0;
-    let max_working_hours = actual_revenue / MINIMUM_WAGE;
-    println!("Sale: {:.2}", sale);
-    println!("Transaction cost: {:.2}", transaction_cost);
-    println!("Payment processing fee: {:.2}", payment_processing_fee);
-    println!("Offsite ads fee: {:.2}", offsite_ads_fee);
-    println!("Total fees: {:.2}", total_fees);
-    println!("Actual revenue: {:.2}", actual_revenue);
-    println!("Percentage kept: {:.2}", percentage_kept);
-    println!(
-        "Max working hours: {}:{}",
-        max_working_hours as i32,
-        ((max_working_hours - ((max_working_hours as i32) as f32)) * 60.0) as i32
-    );
+    loop {
+        let mut input = String::new();
+        println!("What is your input?");
+        println!("1. Cost of sale");
+        println!("2. How much to charge?");
+        println!("3. Quit");
+        io::stdin()
+            .read_line(&mut input)
+            .expect("failed to readline");
+        println!("");
+
+        match input.trim() {
+            "1" => {
+                let mut sale = String::new();
+                println!("Enter cost of sale:");
+                io::stdin()
+                    .read_line(&mut sale)
+                    .expect("failed to readline");
+                println!("");
+
+                calculator::based_on_sale(
+                    sale.trim()
+                        .parse::<f32>()
+                        .expect(format!("Unable to parse {}", sale.trim()).as_str()),
+                );
+            }
+            "2" => {
+                let mut hours = String::new();
+                println!("Enter number of hours it took:");
+                io::stdin()
+                    .read_line(&mut hours)
+                    .expect("failed to readline");
+                println!("");
+
+                let mut markup = String::new();
+                println!("What percentage markup?");
+                io::stdin()
+                    .read_line(&mut markup)
+                    .expect("failed to readline");
+                println!("");
+
+                let mut ads = String::new();
+                println!("Are offsite ads going to be used (y/n)?");
+                io::stdin().read_line(&mut ads).expect("failed to readline");
+                println!("");
+
+                calculator::how_much_to_charge(
+                    hours
+                        .trim()
+                        .parse::<f32>()
+                        .expect(format!("Unable to parse {}", hours.trim()).as_str()),
+                    markup
+                        .trim()
+                        .parse::<f32>()
+                        .expect(format!("Unable to parse {}", markup.trim()).as_str()),
+                    ads.trim() == "y",
+                );
+            }
+            "3" => exit(0),
+            _ => {
+                println!("Invalid input provided");
+                continue;
+            }
+        };
+        println!("");
+    }
 }
