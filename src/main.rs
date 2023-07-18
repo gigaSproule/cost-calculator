@@ -6,11 +6,13 @@ mod config;
 fn set_options() {
     let mut config = config::get_config();
     println!("Markup percentage: {}%", config.markup_percentage);
+    println!("Hourly rate: £{}", config.hourly_rate);
     println!("");
 
     println!("What do you want to set?");
     println!("1. Markup percentage");
-    println!("2. Go back");
+    println!("2. Hourly rate");
+    println!("3. Go back");
     let mut option = String::new();
     io::stdin()
         .read_line(&mut option)
@@ -28,11 +30,25 @@ fn set_options() {
 
             config.markup_percentage = value
                 .trim()
-                .parse()
+                .parse::<f32>()
                 .expect(format!("Unable to parse {}", value.trim()).as_str());
             config::store_config(&config);
         }
-        "2" => return,
+        "2" => {
+            println!("Enter value:");
+            let mut value = String::new();
+            io::stdin()
+                .read_line(&mut value)
+                .expect("failed to readline");
+            println!("");
+
+            config.hourly_rate = value
+                .trim()
+                .parse::<f32>()
+                .expect(format!("Unable to parse {}", value.trim()).as_str());
+            config::store_config(&config);
+        }
+        "3" => return,
         _ => println!("Invalid input provided"),
     }
 }
