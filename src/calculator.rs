@@ -56,6 +56,5 @@ pub(crate) fn how_much_to_charge(
     let config = config::get_config();
     let markup_percentage = (100.0 + config.markup_percentage) / 100.0;
 
-    println!("Exact: {}", (charge));
     println!("Charge: £{:.0}", (charge * markup_percentage).ceil());
 }
