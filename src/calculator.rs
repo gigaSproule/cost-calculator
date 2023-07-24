@@ -19,7 +19,8 @@ pub(crate) fn based_on_sale(sale: f32, delivery_costs: f32, offsite_ads: bool) {
         0.0
     };
     let total_fees = transaction_cost + payment_processing_cost + offsite_ads_cost + LISTING_FEE;
-    let revenue = sale - total_fees;
+    let tax = sale * (config.tax_rate / 100.0);
+    let revenue = sale - total_fees - tax;
     let percentage_kept = (revenue / sale) * 100.0;
     let max_working_hours = revenue / config.hourly_rate;
     println!("Sale: £{:.2}", sale);
@@ -28,6 +29,7 @@ pub(crate) fn based_on_sale(sale: f32, delivery_costs: f32, offsite_ads: bool) {
     println!("Payment processing fee: £{:.2}", payment_processing_cost);
     println!("Offsite ads fee: £{:.2}", offsite_ads_cost);
     println!("Total fees: £{:.2}", total_fees);
+    println!("Tax: £{:.2}", tax);
     println!("Revenue: £{:.2}", revenue);
     println!("Percentage kept: {:.2}%", percentage_kept);
     println!(

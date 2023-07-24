@@ -7,12 +7,14 @@ fn set_options() {
     let mut config = config::get_config();
     println!("Markup percentage: {}%", config.markup_percentage);
     println!("Hourly rate: £{}", config.hourly_rate);
+    println!("Tax rate: {}%", config.tax_rate);
     println!("");
 
     println!("What do you want to set?");
     println!("1. Markup percentage");
     println!("2. Hourly rate");
-    println!("3. Go back");
+    println!("3. Tax rate");
+    println!("4. Go back");
     let mut option = String::new();
     io::stdin()
         .read_line(&mut option)
@@ -48,7 +50,21 @@ fn set_options() {
                 .expect(format!("Unable to parse {}", value.trim()).as_str());
             config::store_config(&config);
         }
-        "3" => return,
+        "3" => {
+            println!("Enter value:");
+            let mut value = String::new();
+            io::stdin()
+                .read_line(&mut value)
+                .expect("failed to readline");
+            println!("");
+
+            config.tax_rate = value
+                .trim()
+                .parse::<f32>()
+                .expect(format!("Unable to parse {}", value.trim()).as_str());
+            config::store_config(&config);
+        }
+        "4" => return,
         _ => println!("Invalid input provided"),
     }
 }

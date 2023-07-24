@@ -14,3 +14,5 @@ Cargo.lock
 *.pdb
 
 calculator_config.toml
+
+.idea/
