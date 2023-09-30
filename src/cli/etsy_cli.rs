@@ -33,7 +33,7 @@ pub(crate) fn etsy_calculator() {
             io::stdin().read_line(&mut ads).expect("failed to readline");
             println!();
 
-            etsy_calculator::based_on_sale(
+            let sale_breakdown = etsy_calculator::based_on_sale(
                 sale.trim()
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", sale.trim())),
@@ -42,6 +42,41 @@ pub(crate) fn etsy_calculator() {
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", delivery_costs.trim())),
                 ads.trim() == "y",
+            );
+            println!("Sale: £{:.2}", sale_breakdown.sale);
+            println!("Delivery costs: £{:.2}", sale_breakdown.delivery_costs);
+            println!("Transaction cost: £{:.2}", sale_breakdown.transaction_cost);
+            println!(
+                "Payment processing fee: £{:.2}",
+                sale_breakdown.payment_processing_cost
+            );
+            println!("Offsite ads fee: £{:.2}", sale_breakdown.offsite_ads_cost);
+            println!(
+                "Regulatory operating fee: £{:.2}",
+                sale_breakdown.regulatory_operating_fee
+            );
+            println!(
+                "VAT paid by buyer: £{:.2}",
+                sale_breakdown.vat_paid_by_buyer
+            );
+            println!(
+                "VAT on seller fees: £{:.2}",
+                sale_breakdown.vat_on_seller_fees
+            );
+            println!("Total fees: £{:.2}", sale_breakdown.total_fees);
+            println!(
+                "Total fees with VAT: £{:.2}",
+                sale_breakdown.total_fees_with_vat
+            );
+            println!("Tax: £{:.2}", sale_breakdown.tax);
+            println!("Revenue: £{:.2}", sale_breakdown.revenue);
+            println!("Percentage kept: {:.2}%", sale_breakdown.percentage_kept);
+            println!(
+                "Max working hours: {}:{:02}",
+                sale_breakdown.max_working_hours as i64,
+                ((sale_breakdown.max_working_hours
+                    - ((sale_breakdown.max_working_hours as i64) as f64))
+                    * 60.0) as i64
             );
         }
         "2" => {
@@ -71,7 +106,7 @@ pub(crate) fn etsy_calculator() {
             io::stdin().read_line(&mut ads).expect("failed to readline");
             println!();
 
-            etsy_calculator::how_much_to_charge(
+            let charge_amount = etsy_calculator::how_much_to_charge(
                 minutes
                     .trim()
                     .parse::<f64>()
@@ -85,6 +120,10 @@ pub(crate) fn etsy_calculator() {
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", delivery_costs.trim())),
                 ads.trim() == "y",
+            );
+            println!(
+                "Charge: £{:.0} (with VAT £{:.0})",
+                charge_amount.total_to_charge, charge_amount.with_vat
             );
         }
         "3" => exit(0),

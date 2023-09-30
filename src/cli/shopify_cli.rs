@@ -35,7 +35,7 @@ pub(crate) fn shopify_calculator() {
                 .expect("failed to readline");
             println!();
 
-            shopify_calculator::based_on_sale(
+            let sales_breakdown = shopify_calculator::based_on_sale(
                 sale.trim()
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", sale.trim())),
@@ -44,6 +44,22 @@ pub(crate) fn shopify_calculator() {
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", delivery_costs.trim())),
                 international_or_amex.trim() == "y",
+            );
+            println!("Sale: £{:.2}", sales_breakdown.sale);
+            println!("Delivery costs: £{:.2}", sales_breakdown.delivery_costs);
+            println!(
+                "Payment processing fee: £{:.2}",
+                sales_breakdown.payment_processing_cost
+            );
+            println!("Tax: £{:.2}", sales_breakdown.tax);
+            println!("Revenue: £{:.2}", sales_breakdown.revenue);
+            println!("Percentage kept: {:.2}%", sales_breakdown.percentage_kept);
+            println!(
+                "Max working hours: {}:{:02}",
+                sales_breakdown.max_working_hours as i64,
+                ((sales_breakdown.max_working_hours
+                    - ((sales_breakdown.max_working_hours as i64) as f64))
+                    * 60.0) as i64
             );
         }
         "2" => {
@@ -75,7 +91,7 @@ pub(crate) fn shopify_calculator() {
                 .expect("failed to readline");
             println!();
 
-            shopify_calculator::how_much_to_charge(
+            let charge_amount = shopify_calculator::how_much_to_charge(
                 minutes
                     .trim()
                     .parse::<f64>()
@@ -90,6 +106,7 @@ pub(crate) fn shopify_calculator() {
                     .unwrap_or_else(|_| panic!("Unable to parse {}", delivery_costs.trim())),
                 international_or_amex.trim() == "y",
             );
+            println!("Charge: £{:.0}", charge_amount.total_to_charge);
         }
         "3" => exit(0),
         _ => {

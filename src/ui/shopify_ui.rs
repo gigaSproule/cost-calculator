@@ -87,10 +87,195 @@ fn cost_of_sale() -> gtk4::Grid {
         .halign(gtk4::Align::End)
         .valign(gtk4::Align::Center)
         .build();
+    container.attach(&calculate, 1, 3, 1, 1);
+
+    let sale_label = gtk4::Label::builder()
+        .label("Sale")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&sale_label, 0, 5, 1, 1);
+    let sale_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&sale_value, 1, 5, 1, 1);
+
+    let delivery_costs_label = gtk4::Label::builder()
+        .label("Delivery costs")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&delivery_costs_label, 0, 6, 1, 1);
+    let delivery_costs_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&delivery_costs_value, 1, 6, 1, 1);
+
+    let transaction_cost_label = gtk4::Label::builder()
+        .label("Transaction cost")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&transaction_cost_label, 0, 7, 1, 1);
+    let transaction_cost_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&transaction_cost_value, 1, 7, 1, 1);
+
+    let payment_processing_cost_label = gtk4::Label::builder()
+        .label("Payment processing cost")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&payment_processing_cost_label, 0, 8, 1, 1);
+    let payment_processing_cost_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&payment_processing_cost_value, 1, 8, 1, 1);
+
+    let offsite_ads_cost_label = gtk4::Label::builder()
+        .label("Offsite ads cost")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&offsite_ads_cost_label, 0, 9, 1, 1);
+    let offsite_ads_cost_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&offsite_ads_cost_value, 1, 9, 1, 1);
+
+    let regulatory_operating_fee_label = gtk4::Label::builder()
+        .label("Regulatory operating fee")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&regulatory_operating_fee_label, 0, 10, 1, 1);
+    let regulatory_operating_fee_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&regulatory_operating_fee_value, 1, 10, 1, 1);
+
+    let vat_paid_by_buyer_label = gtk4::Label::builder()
+        .label("VAT paid by buyer")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&vat_paid_by_buyer_label, 0, 11, 1, 1);
+    let vat_paid_by_buyer_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&vat_paid_by_buyer_value, 1, 11, 1, 1);
+
+    let vat_on_seller_fees_label = gtk4::Label::builder()
+        .label("VAT on seller fees")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&vat_on_seller_fees_label, 0, 12, 1, 1);
+    let vat_on_seller_fees_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&vat_on_seller_fees_value, 1, 12, 1, 1);
+
+    let total_fees_label = gtk4::Label::builder()
+        .label("Total fees")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&total_fees_label, 0, 13, 1, 1);
+    let total_fees_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&total_fees_value, 1, 13, 1, 1);
+
+    let total_fees_with_vat_label = gtk4::Label::builder()
+        .label("Total fees with VAT")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&total_fees_with_vat_label, 0, 14, 1, 1);
+    let total_fees_with_vat_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&total_fees_with_vat_value, 1, 14, 1, 1);
+
+    let tax_label = gtk4::Label::builder()
+        .label("Tax")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&tax_label, 0, 15, 1, 1);
+    let tax_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&tax_value, 1, 15, 1, 1);
+
+    let revenue_label = gtk4::Label::builder()
+        .label("Revenue")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&revenue_label, 0, 16, 1, 1);
+    let revenue_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&revenue_value, 1, 16, 1, 1);
+
+    let revenue_label = gtk4::Label::builder()
+        .label("Revenue")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&revenue_label, 0, 16, 1, 1);
+    let revenue_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&revenue_value, 1, 16, 1, 1);
+
+    let percentage_kept_label = gtk4::Label::builder()
+        .label("Percentage kept")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&percentage_kept_label, 0, 17, 1, 1);
+    let percentage_kept_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&percentage_kept_value, 1, 17, 1, 1);
+
+    let max_working_hours_label = gtk4::Label::builder()
+        .label("Max working hours")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&max_working_hours_label, 0, 18, 1, 1);
+    let max_working_hours_value = gtk4::Label::builder()
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&max_working_hours_value, 1, 18, 1, 1);
+
     calculate.connect_clicked(
-        clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong international_amex_input =>
+        clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong international_amex_input, @strong sale_value,
+            @strong delivery_costs_value, @strong transaction_cost_value, @strong payment_processing_cost_value, @strong offsite_ads_cost_value,
+            @strong regulatory_operating_fee_value, @strong vat_paid_by_buyer_value, @strong vat_on_seller_fees_value, @strong total_fees_value,
+            @strong total_fees_with_vat_value, @strong tax_value, @strong revenue_value, @strong percentage_kept_value, @strong max_working_hours_value =>
             move |_| {
-                shopify_calculator::based_on_sale(
+                let sale_breakdown = shopify_calculator::based_on_sale(
                     cost_of_sale_input.value(),
                     cost_of_delivery_input.value(),
                     international_amex_input.is_active(),
@@ -98,10 +283,23 @@ fn cost_of_sale() -> gtk4::Grid {
                 cost_of_sale_input.set_value(0.0);
                 cost_of_delivery_input.set_value(0.0);
                 international_amex_input.set_active(false);
+                sale_value.set_text(&format!("£{:.2}", sale_breakdown.sale));
+                delivery_costs_value.set_text(&format!("£{:.2}", sale_breakdown.delivery_costs));
+                transaction_cost_value.set_text(&format!("£{:.2}", sale_breakdown.transaction_cost));
+                payment_processing_cost_value.set_text(&format!("£{:.2}", sale_breakdown.payment_processing_cost));
+                offsite_ads_cost_value.set_text(&format!("£{:.2}", sale_breakdown.offsite_ads_cost));
+                regulatory_operating_fee_value.set_text(&format!("£{:.2}", sale_breakdown.regulatory_operating_fee));
+                vat_paid_by_buyer_value.set_text(&format!("£{:.2}", sale_breakdown.vat_paid_by_buyer));
+                vat_on_seller_fees_value.set_text(&format!("£{:.2}", sale_breakdown.vat_on_seller_fees));
+                total_fees_value.set_text(&format!("£{:.2}", sale_breakdown.total_fees));
+                total_fees_with_vat_value.set_text(&format!("£{:.2}", sale_breakdown.total_fees_with_vat));
+                tax_value.set_text(&format!("£{:.2}", sale_breakdown.tax));
+                revenue_value.set_text(&format!("£{:.2}", sale_breakdown.revenue));
+                percentage_kept_value.set_text(&format!("{:.2}%", sale_breakdown.percentage_kept));
+                max_working_hours_value.set_text(&format!("{}:{:02}", sale_breakdown.max_working_hours as i64, ((sale_breakdown.max_working_hours - ((sale_breakdown.max_working_hours as i64) as f64)) * 60.0) as i64));
             }
         ),
     );
-    container.attach(&calculate, 1, 3, 1, 1);
     container
 }
 
@@ -197,10 +395,15 @@ fn how_much_to_charge() -> gtk4::Grid {
         .halign(gtk4::Align::End)
         .valign(gtk4::Align::End)
         .build();
+    container.attach(&calculate, 1, 4, 1, 1);
+
+    let answer_label = gtk4::Label::builder().halign(gtk4::Align::Start).build();
+    container.attach(&answer_label, 0, 5, 2, 1);
+
     calculate.connect_clicked(
-        clone!(@strong minutes_input, @strong material_costs_input, @strong cost_of_delivery_input, @strong international_amex_input =>
+        clone!(@strong minutes_input, @strong material_costs_input, @strong cost_of_delivery_input, @strong international_amex_input, @strong answer_label =>
             move |_| {
-                shopify_calculator::how_much_to_charge(
+                let charge_amount = shopify_calculator::how_much_to_charge(
                     minutes_input.value(),
                     material_costs_input.value(),
                     cost_of_delivery_input.value(),
@@ -210,9 +413,9 @@ fn how_much_to_charge() -> gtk4::Grid {
                 material_costs_input.set_value(0.0);
                 cost_of_delivery_input.set_value(0.0);
                 international_amex_input.set_active(false);
+                answer_label.set_text(&format!("Charge: £{:.0} (with VAT £{:.0})", charge_amount.total_to_charge, charge_amount.with_vat));
             }
         ),
     );
-    container.attach(&calculate, 1, 4, 1, 1);
     container
 }

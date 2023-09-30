@@ -8,7 +8,7 @@ mod stripe_ui;
 
 pub(crate) fn load_ui() {
     let application = adw::Application::builder()
-        .application_id("com.benjaminsproule.jackie-cost-calculator")
+        .application_id("com.benjaminsproule.cost-calculator")
         .build();
     application.connect_activate(build_ui);
     application.run();
@@ -17,7 +17,7 @@ pub(crate) fn load_ui() {
 fn build_ui(application: &adw::Application) {
     let window = adw::ApplicationWindow::builder()
         .application(application)
-        .title("Main Menu")
+        .title("Cost Calculator")
         .default_width(350)
         .default_height(70)
         .build();

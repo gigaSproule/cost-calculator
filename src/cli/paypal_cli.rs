@@ -45,7 +45,7 @@ pub(crate) fn paypal_calculator() {
                 "n".to_string()
             };
 
-            paypal_calculator::based_on_sale(
+            let sale_breakdown = paypal_calculator::based_on_sale(
                 sale.trim()
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", sale.trim())),
@@ -55,6 +55,22 @@ pub(crate) fn paypal_calculator() {
                     .unwrap_or_else(|_| panic!("Unable to parse {}", delivery_costs.trim())),
                 eea.trim() == "y",
                 international.trim() == "y",
+            );
+            println!("Sale: £{:.2}", sale_breakdown.sale);
+            println!("Delivery costs: £{:.2}", sale_breakdown.delivery_costs);
+            println!(
+                "Payment processing fee: £{:.2}",
+                sale_breakdown.payment_processing_cost
+            );
+            println!("Tax: £{:.2}", sale_breakdown.tax);
+            println!("Revenue: £{:.2}", sale_breakdown.revenue);
+            println!("Percentage kept: {:.2}%", sale_breakdown.percentage_kept);
+            println!(
+                "Max working hours: {}:{:02}",
+                sale_breakdown.max_working_hours as i64,
+                ((sale_breakdown.max_working_hours
+                    - ((sale_breakdown.max_working_hours as i64) as f64))
+                    * 60.0) as i64
             );
         }
         "2" => {
@@ -96,7 +112,7 @@ pub(crate) fn paypal_calculator() {
                 "n".to_string()
             };
 
-            paypal_calculator::how_much_to_charge(
+            let charge_amount = paypal_calculator::how_much_to_charge(
                 minutes
                     .trim()
                     .parse::<f64>()
@@ -112,6 +128,7 @@ pub(crate) fn paypal_calculator() {
                 eea.trim() == "y",
                 international.trim() == "y",
             );
+            println!("Charge: £{:.0}", charge_amount.total_to_charge);
         }
         "3" => exit(0),
         _ => {
