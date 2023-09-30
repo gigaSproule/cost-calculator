@@ -24,12 +24,12 @@ pub(crate) fn options() -> gtk4::Grid {
     let markup_percentage_input = gtk4::SpinButton::builder()
         .name("markup_percentage")
         .hexpand(true)
-        .value(existing_config.markup_percentage)
         .adjustment(&markup_percentage_adjustment)
         .climb_rate(0.5)
         .numeric(true)
         .digits(2)
         .build();
+    markup_percentage_input.set_value(existing_config.markup_percentage);
     container.attach(&markup_percentage_input, 1, 0, 1, 1);
 
     let hourly_rate_label = gtk4::Label::builder()
@@ -42,12 +42,12 @@ pub(crate) fn options() -> gtk4::Grid {
     let hourly_rate_input = gtk4::SpinButton::builder()
         .name("hourly_rate")
         .hexpand(true)
-        .value(existing_config.hourly_rate)
         .adjustment(&hourly_adjustment)
         .climb_rate(0.5)
         .numeric(true)
         .digits(2)
         .build();
+    hourly_rate_input.set_value(existing_config.hourly_rate);
     container.attach(&hourly_rate_input, 1, 1, 1, 1);
 
     let tax_rate_label = gtk4::Label::builder()
@@ -60,12 +60,12 @@ pub(crate) fn options() -> gtk4::Grid {
     let tax_rate_input = gtk4::SpinButton::builder()
         .name("tax_rate")
         .hexpand(true)
-        .value(existing_config.tax_rate)
         .adjustment(&tax_rate_adjustment)
         .climb_rate(0.5)
         .numeric(true)
         .digits(2)
         .build();
+    tax_rate_input.set_value(existing_config.tax_rate);
     container.attach(&tax_rate_input, 1, 2, 1, 1);
 
     let vat_label = gtk4::Label::builder()
@@ -78,12 +78,12 @@ pub(crate) fn options() -> gtk4::Grid {
     let vat_input = gtk4::SpinButton::builder()
         .name("vat")
         .hexpand(true)
-        .value(existing_config.vat)
         .adjustment(&vat_adjustment)
         .climb_rate(0.5)
         .numeric(true)
         .digits(2)
         .build();
+    vat_input.set_value(existing_config.vat);
     container.attach(&vat_input, 1, 3, 1, 1);
 
     let save = gtk4::Button::builder()

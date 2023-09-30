@@ -1,1 +1,1 @@
-# jackie-cost-calculator
+# Cost calculator
