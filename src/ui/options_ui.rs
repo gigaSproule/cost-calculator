@@ -24,7 +24,7 @@ pub(crate) fn options() -> gtk4::Grid {
     let markup_percentage_input = gtk4::SpinButton::builder()
         .name("markup_percentage")
         .hexpand(true)
-        .value(existing_config.markup_percentage.into())
+        .value(existing_config.markup_percentage)
         .adjustment(&markup_percentage_adjustment)
         .climb_rate(0.5)
         .numeric(true)

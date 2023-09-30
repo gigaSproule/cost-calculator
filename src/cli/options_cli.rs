@@ -34,7 +34,7 @@ pub(crate) fn set_config_options() {
             config.markup_percentage = value
                 .trim()
                 .parse::<f64>()
-                .expect(format!("Unable to parse {}", value.trim()).as_str());
+                .unwrap_or_else(|_| panic!("Unable to parse {}", value.trim()));
             config::store_config(&config);
         }
         "2" => {
@@ -48,7 +48,7 @@ pub(crate) fn set_config_options() {
             config.hourly_rate = value
                 .trim()
                 .parse::<f64>()
-                .expect(format!("Unable to parse {}", value.trim()).as_str());
+                .unwrap_or_else(|_| panic!("Unable to parse {}", value.trim()));
             config::store_config(&config);
         }
         "3" => {
@@ -62,7 +62,7 @@ pub(crate) fn set_config_options() {
             config.tax_rate = value
                 .trim()
                 .parse::<f64>()
-                .expect(format!("Unable to parse {}", value.trim()).as_str());
+                .unwrap_or_else(|_| panic!("Unable to parse {}", value.trim()));
             config::store_config(&config);
         }
         "4" => {
@@ -76,10 +76,10 @@ pub(crate) fn set_config_options() {
             config.vat = value
                 .trim()
                 .parse::<f64>()
-                .expect(format!("Unable to parse {}", value.trim()).as_str());
+                .unwrap_or_else(|_| panic!("Unable to parse {}", value.trim()));
             config::store_config(&config);
         }
-        "5" => return,
+        "5" => (),
         _ => println!("Invalid input provided"),
     }
 }

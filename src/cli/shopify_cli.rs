@@ -38,11 +38,11 @@ pub(crate) fn shopify_calculator() {
             shopify_calculator::based_on_sale(
                 sale.trim()
                     .parse::<f64>()
-                    .expect(format!("Unable to parse {}", sale.trim()).as_str()),
+                    .unwrap_or_else(|_| panic!("Unable to parse {}", sale.trim())),
                 delivery_costs
                     .trim()
                     .parse::<f64>()
-                    .expect(format!("Unable to parse {}", delivery_costs.trim()).as_str()),
+                    .unwrap_or_else(|_| panic!("Unable to parse {}", delivery_costs.trim())),
                 international_or_amex.trim() == "y",
             );
         }
@@ -79,15 +79,15 @@ pub(crate) fn shopify_calculator() {
                 minutes
                     .trim()
                     .parse::<f64>()
-                    .expect(format!("Unable to parse {}", minutes.trim()).as_str()),
+                    .unwrap_or_else(|_| panic!("Unable to parse {}", minutes.trim())),
                 material_costs
                     .trim()
                     .parse::<f64>()
-                    .expect(format!("Unable to parse {}", material_costs.trim()).as_str()),
+                    .unwrap_or_else(|_| panic!("Unable to parse {}", material_costs.trim())),
                 delivery_costs
                     .trim()
                     .parse::<f64>()
-                    .expect(format!("Unable to parse {}", delivery_costs.trim()).as_str()),
+                    .unwrap_or_else(|_| panic!("Unable to parse {}", delivery_costs.trim())),
                 international_or_amex.trim() == "y",
             );
         }

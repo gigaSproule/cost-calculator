@@ -134,14 +134,14 @@ fn how_much_to_charge() -> gtk4::Grid {
         .build();
     minutes_input.connect_input(|input| {
         let text = input.text();
-        let split = text.split(":").collect::<Vec<&str>>();
+        let split = text.split(':').collect::<Vec<&str>>();
         if split.len() != 2 {
             return None;
         }
 
         let hours = split.first().unwrap().parse::<f64>().unwrap();
         let minutes = split.last().unwrap().parse::<f64>().unwrap();
-        return Some(Ok((hours * 60.0) + minutes));
+        Some(Ok((hours * 60.0) + minutes))
     });
     minutes_input.connect_output(|input| {
         let hours = input.adjustment().value() / 60.0;
