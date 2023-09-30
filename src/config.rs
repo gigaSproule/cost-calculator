@@ -1,3 +1,5 @@
+use std::env;
+
 use serde::{Deserialize, Serialize};
 
 const CONFIG_PATH: &str = "calculator_config.toml";
@@ -25,11 +27,21 @@ impl Default for Config {
     }
 }
 
+fn get_config_path() -> String {
+    let config_dir = match env::consts::OS {
+        "windows" => env::var("LOCALAPPDATA").unwrap(),
+        "linux" => env::var("XDG_CONFIG_HOME").unwrap_or(env::var("HOME").unwrap() + "/.config"),
+        "macos" => env::var("HOME").unwrap() + "/Library/Preferences",
+        _ => String::new(),
+    };
+    format!("{}/{}", config_dir, CONFIG_PATH)
+}
+
 pub(crate) fn get_config() -> Config {
-    let config: Config = confy::load_path(CONFIG_PATH).expect("Unable to read config");
+    let config: Config = confy::load_path(&get_config_path()).expect("Unable to read config");
     config
 }
 
 pub(crate) fn store_config(config: &Config) {
-    confy::store_path(CONFIG_PATH, config).expect("Unable to store updated config");
+    confy::store_path(&get_config_path(), config).expect("Unable to store updated config");
 }
