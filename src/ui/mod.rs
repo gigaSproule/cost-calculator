@@ -1,4 +1,4 @@
-use gtk4::prelude::*;
+use adw::prelude::*;
 
 mod etsy_ui;
 mod options_ui;
@@ -7,23 +7,26 @@ mod shopify_ui;
 mod stripe_ui;
 
 pub(crate) fn load_ui() {
-    let application = gtk4::Application::builder()
+    let application = adw::Application::builder()
         .application_id("com.benjaminsproule.jackie-cost-calculator")
         .build();
     application.connect_activate(build_ui);
     application.run();
 }
 
-fn build_ui(application: &gtk4::Application) {
-    let window = gtk4::ApplicationWindow::builder()
+fn build_ui(application: &adw::Application) {
+    let window = adw::ApplicationWindow::builder()
         .application(application)
         .title("Main Menu")
         .default_width(350)
         .default_height(70)
         .build();
 
-    let container = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
-    window.set_child(Some(&container));
+    let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
+    container.append(&adw::HeaderBar::new());
+    window.set_content(Some(&container));
+    let body = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
+    container.append(&body);
 
     let stack = gtk4::Stack::new();
     stack.set_transition_type(gtk4::StackTransitionType::SlideLeftRight);
@@ -47,8 +50,8 @@ fn build_ui(application: &gtk4::Application) {
     let options_title = options_ui::options();
     stack.add_titled(&options_title, Option::<&str>::None, "Options");
 
-    container.append(&side_stack);
-    container.append(&stack);
+    body.append(&side_stack);
+    body.append(&stack);
 
     window.present();
 }
