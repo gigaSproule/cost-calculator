@@ -1,17 +1,17 @@
 use serde::{Deserialize, Serialize};
 
 const CONFIG_PATH: &str = "calculator_config.toml";
-const MINIMUM_WAGE: f32 = 10.42;
-const BASIC_RATE: f32 = 20.0;
-const VAT: f32 = 20.0;
+const MINIMUM_WAGE: f64 = 10.42;
+const BASIC_RATE: f64 = 20.0;
+const VAT: f64 = 20.0;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default)]
 pub(crate) struct Config {
-    pub(crate) markup_percentage: f32,
-    pub(crate) hourly_rate: f32,
-    pub(crate) tax_rate: f32,
-    pub(crate) vat: f32,
+    pub(crate) markup_percentage: f64,
+    pub(crate) hourly_rate: f64,
+    pub(crate) tax_rate: f64,
+    pub(crate) vat: f64,
 }
 
 impl Default for Config {

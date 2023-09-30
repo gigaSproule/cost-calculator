@@ -1,15 +1,18 @@
 use crate::config;
 
-const PAYMENT_PROCESSING_PERCENTAGE: f32 = 0.02;
-const INTERNATIONAL_AMEX_PAYMENT_PROCESSING_PERCENTAGE: f32 = 0.031;
-const PAYMENT_PROCESSING_FEE: f32 = 0.25;
+const PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.015;
+const EU_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.025;
+const INTERNATIONAL_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.035;
+const PAYMENT_PROCESSING_FEE: f64 = 0.2;
 
-pub(crate) fn based_on_sale(sale: f32, delivery_costs: f32, international_or_amex: bool) {
+pub(crate) fn based_on_sale(sale: f64, delivery_costs: f64, eu: bool, international: bool) {
     let config = config::get_config();
 
     let sale_total = sale + delivery_costs;
-    let payment_processing_percentage = if international_or_amex {
-        INTERNATIONAL_AMEX_PAYMENT_PROCESSING_PERCENTAGE
+    let payment_processing_percentage = if eu {
+        EU_PAYMENT_PROCESSING_PERCENTAGE
+    } else if international {
+        INTERNATIONAL_PAYMENT_PROCESSING_PERCENTAGE
     } else {
         PAYMENT_PROCESSING_PERCENTAGE
     };
@@ -27,29 +30,32 @@ pub(crate) fn based_on_sale(sale: f32, delivery_costs: f32, international_or_ame
     println!("Percentage kept: {:.2}%", percentage_kept);
     println!(
         "Max working hours: {}:{:02}",
-        max_working_hours as i32,
-        ((max_working_hours - ((max_working_hours as i32) as f32)) * 60.0) as i32
+        max_working_hours as i64,
+        ((max_working_hours - ((max_working_hours as i64) as f64)) * 60.0) as i64
     );
 }
 
 pub(crate) fn how_much_to_charge(
-    number_of_hours: f32,
-    material_costs: f32,
-    delivery_costs: f32,
-    international_or_amex: bool,
+    number_of_minutes: f64,
+    material_costs: f64,
+    delivery_costs: f64,
+    eu: bool,
+    international: bool,
 ) {
     let config = config::get_config();
 
-    let base_charge = (number_of_hours * config.hourly_rate) + material_costs + delivery_costs;
-    let payment_processing_percentage = if international_or_amex {
-        INTERNATIONAL_AMEX_PAYMENT_PROCESSING_PERCENTAGE
+    let base_charge =
+        ((number_of_minutes / 60.0) * config.hourly_rate) + material_costs + delivery_costs;
+    let payment_processing_percentage = if eu {
+        EU_PAYMENT_PROCESSING_PERCENTAGE
+    } else if international {
+        INTERNATIONAL_PAYMENT_PROCESSING_PERCENTAGE
     } else {
         PAYMENT_PROCESSING_PERCENTAGE
     };
     let payment_processing_cost =
         (base_charge * payment_processing_percentage) + PAYMENT_PROCESSING_FEE;
-    let charge =
-        base_charge + payment_processing_cost;
+    let charge = base_charge + payment_processing_cost;
 
     let markup_percentage = (100.0 + config.markup_percentage) / 100.0;
 
