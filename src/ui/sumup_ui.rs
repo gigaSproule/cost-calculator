@@ -1,8 +1,31 @@
 use gtk4::{glib::clone, prelude::*};
 
-use crate::calculator::stripe_calculator;
+use crate::calculator::sumup_calculator::{self, PaymentOption, SubscriptionOption};
 
-pub(crate) fn stripe_options() -> gtk4::Box {
+fn to_payment_option(id: &str) -> PaymentOption {
+    match id {
+        "card_reader" => PaymentOption::CardReader,
+        "pos_lite" => PaymentOption::PosLite,
+        "tap_to_pay_iphone" => PaymentOption::TapToPayIPhone,
+        "remote_payment" => PaymentOption::RemotePayment,
+        "qr_code" => PaymentOption::QrCode,
+        &_ => {
+            panic!("Something went horribly wrong as payment_option was unknown")
+        }
+    }
+}
+
+fn to_subscription_option(id: &str) -> SubscriptionOption {
+    match id {
+        "no_contract" => SubscriptionOption::NoContract,
+        "sumup_one" => SubscriptionOption::SumUpOne,
+        &_ => {
+            panic!("Something went horribly wrong as subscription_option was unknown")
+        }
+    }
+}
+
+pub(crate) fn sumup_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
     let stack = gtk4::Stack::builder()
         .transition_type(gtk4::StackTransitionType::SlideLeftRight)
@@ -54,37 +77,34 @@ fn cost_of_sale() -> gtk4::Grid {
         .build();
     container.attach(&cost_of_sale_input, 1, 0, 1, 1);
 
-    let cost_of_delivery_label = gtk4::Label::builder()
-        .label("Cost of delivery")
+    let payment_option_label = gtk4::Label::builder()
+        .label("Payment option")
         .halign(gtk4::Align::Start)
         .valign(gtk4::Align::Center)
         .build();
-    container.attach(&cost_of_delivery_label, 0, 1, 1, 1);
-    let cost_of_delivery_adjustment = gtk4::Adjustment::new(0.0, 0.0, 1000.0, 0.01, 5.0, 0.0);
-    let cost_of_delivery_input = gtk4::SpinButton::builder()
-        .name("cost_of_delivery")
-        .hexpand(true)
-        .adjustment(&cost_of_delivery_adjustment)
-        .climb_rate(0.5)
-        .numeric(true)
-        .digits(2)
-        .build();
-    container.attach(&cost_of_delivery_input, 1, 1, 1, 1);
+    container.attach(&payment_option_label, 0, 1, 1, 1);
+    let payment_option_input = gtk4::ComboBoxText::builder().name("payment_option").build();
+    payment_option_input.append(Some("card_reader"), "Card reader");
+    payment_option_input.append(Some("pos_lite"), "POS Lite");
+    payment_option_input.append(Some("tap_to_pay_iphone"), "Tap to pay iPhone");
+    payment_option_input.append(Some("remote_payment"), "Remote payment");
+    payment_option_input.append(Some("qr_code"), "QR Code");
+    payment_option_input.set_active_id(Some("card_reader"));
+    container.attach(&payment_option_input, 1, 1, 1, 1);
 
-    let location_label = gtk4::Label::builder()
-        .label("Location of sale")
+    let subscription_option_label = gtk4::Label::builder()
+        .label("Subscription option")
         .halign(gtk4::Align::Start)
         .valign(gtk4::Align::Center)
         .build();
-    container.attach(&location_label, 0, 2, 1, 1);
-    let location_input = gtk4::ComboBoxText::builder()
-        .name("location_of_sale")
+    container.attach(&subscription_option_label, 0, 2, 1, 1);
+    let subscription_option_input = gtk4::ComboBoxText::builder()
+        .name("subscription_option")
         .build();
-    location_input.append(Some("local"), "Local");
-    location_input.append(Some("eu"), "EU");
-    location_input.append(Some("international"), "International");
-    location_input.set_active_id(Some("local"));
-    container.attach(&location_input, 1, 2, 1, 1);
+    subscription_option_input.append(Some("no_contract"), "No Contract");
+    subscription_option_input.append(Some("sumup_one"), "SumUp One");
+    subscription_option_input.set_active_id(Some("no_contract"));
+    container.attach(&subscription_option_input, 1, 2, 1, 1);
 
     let calculate = gtk4::Button::builder()
         .label("Calculate")
@@ -262,20 +282,19 @@ fn cost_of_sale() -> gtk4::Grid {
     container.attach(&max_working_hours_value, 1, 18, 1, 1);
 
     calculate.connect_clicked(
-        clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong location_input, @strong sale_value,
+        clone!(@strong cost_of_sale_input, @strong payment_option_input, @strong subscription_option_input, @strong sale_value,
             @strong delivery_costs_value, @strong transaction_cost_value, @strong payment_processing_cost_value, @strong offsite_ads_cost_value,
             @strong regulatory_operating_fee_value, @strong vat_paid_by_buyer_value, @strong vat_on_seller_fees_value, @strong total_fees_value,
             @strong total_fees_with_vat_value, @strong tax_value, @strong revenue_value, @strong percentage_kept_value, @strong max_working_hours_value =>
             move |_| {
-                let sale_breakdown = stripe_calculator::based_on_sale(
+                let sale_breakdown = sumup_calculator::based_on_sale(
                     cost_of_sale_input.value(),
-                    cost_of_delivery_input.value(),
-                    location_input.active_id().unwrap() == "eu",
-                    location_input.active_id().unwrap() == "lnternational",
+                    to_payment_option(payment_option_input.active_id().unwrap().as_str()),
+                    to_subscription_option(subscription_option_input.active_id().unwrap().as_str()),
                 );
                 cost_of_sale_input.set_value(0.0);
-                cost_of_delivery_input.set_value(0.0);
-                location_input.set_active_id(Some("local"));
+                payment_option_input.set_active_id(Some("card_reader"));
+                subscription_option_input.set_active_id(Some("no_contract"));
                 sale_value.set_text(&format!("£{:.2}", sale_breakdown.sale));
                 delivery_costs_value.set_text(&format!("£{:.2}", sale_breakdown.delivery_costs));
                 transaction_cost_value.set_text(&format!("£{:.2}", sale_breakdown.transaction_cost));
@@ -355,37 +374,34 @@ fn how_much_to_charge() -> gtk4::Grid {
         .build();
     container.attach(&material_costs_input, 1, 1, 1, 1);
 
-    let cost_of_delivery_label = gtk4::Label::builder()
-        .label("Cost of delivery")
+    let payment_option_label = gtk4::Label::builder()
+        .label("Payment option")
         .halign(gtk4::Align::Start)
         .valign(gtk4::Align::Center)
         .build();
-    container.attach(&cost_of_delivery_label, 0, 2, 1, 1);
-    let cost_of_delivery_adjustment = gtk4::Adjustment::new(0.0, 0.0, 1000.0, 0.01, 5.0, 0.0);
-    let cost_of_delivery_input = gtk4::SpinButton::builder()
-        .name("cost_of_delivery")
-        .hexpand(true)
-        .adjustment(&cost_of_delivery_adjustment)
-        .climb_rate(0.5)
-        .numeric(true)
-        .digits(2)
-        .build();
-    container.attach(&cost_of_delivery_input, 1, 2, 1, 1);
+    container.attach(&payment_option_label, 0, 2, 1, 1);
+    let payment_option_input = gtk4::ComboBoxText::builder().name("payment_option").build();
+    payment_option_input.append(Some("card_reader"), "Card reader");
+    payment_option_input.append(Some("pos_lite"), "POS Lite");
+    payment_option_input.append(Some("tap_to_pay_iphone"), "Tap to pay iPhone");
+    payment_option_input.append(Some("remote_payment"), "Remote payment");
+    payment_option_input.append(Some("qr_code"), "QR Code");
+    payment_option_input.set_active_id(Some("card_reader"));
+    container.attach(&payment_option_input, 1, 2, 1, 1);
 
-    let location_label = gtk4::Label::builder()
-        .label("Location of sale")
+    let subscription_option_label = gtk4::Label::builder()
+        .label("Subscription option")
         .halign(gtk4::Align::Start)
         .valign(gtk4::Align::Center)
         .build();
-    container.attach(&location_label, 0, 3, 1, 1);
-    let location_input = gtk4::ComboBoxText::builder()
-        .name("loction_of_sale")
+    container.attach(&subscription_option_label, 0, 3, 1, 1);
+    let subscription_option_input = gtk4::ComboBoxText::builder()
+        .name("subscription_option")
         .build();
-    location_input.append(Some("local"), "Local");
-    location_input.append(Some("eu"), "EU");
-    location_input.append(Some("international"), "International");
-    location_input.set_active_id(Some("local"));
-    container.attach(&location_input, 1, 3, 1, 1);
+    subscription_option_input.append(Some("no_contract"), "No Contract");
+    subscription_option_input.append(Some("sumup_one"), "SumUp One");
+    subscription_option_input.set_active_id(Some("no_contract"));
+    container.attach(&subscription_option_input, 1, 3, 1, 1);
 
     let calculate = gtk4::Button::builder()
         .label("Calculate")
@@ -398,19 +414,19 @@ fn how_much_to_charge() -> gtk4::Grid {
     container.attach(&answer_label, 0, 5, 2, 1);
 
     calculate.connect_clicked(
-        clone!(@strong minutes_input, @strong material_costs_input, @strong cost_of_delivery_input, @strong location_input, @strong answer_label =>
+        clone!(@strong minutes_input, @strong material_costs_input, @strong subscription_option_input, @strong answer_label =>
             move |_| {
-                let charge_amount = stripe_calculator::how_much_to_charge(
+                let charge_amount = sumup_calculator::how_much_to_charge(
                     minutes_input.value(),
                     material_costs_input.value(),
-                    cost_of_delivery_input.value(),
-                    location_input.active_id().unwrap() == "eu",
-                    location_input.active_id().unwrap() == "international",
+                    to_payment_option(payment_option_input.active_id().unwrap().as_str()),
+                    to_subscription_option(subscription_option_input.active_id().unwrap().as_str()),
                 );
+
                 minutes_input.set_value(0.0);
                 material_costs_input.set_value(0.0);
-                cost_of_delivery_input.set_value(0.0);
-                location_input.set_active_id(Some("local"));
+                payment_option_input.set_active_id(Some("card_reader"));
+                subscription_option_input.set_active_id(Some("no_contract"));
                 answer_label.set_text(&format!("Charge: £{:.2} (with VAT £{:.2})", charge_amount.total_to_charge, charge_amount.with_vat));
             }
         ),

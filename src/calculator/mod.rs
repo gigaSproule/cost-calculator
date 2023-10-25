@@ -2,6 +2,7 @@ pub(crate) mod etsy_calculator;
 pub(crate) mod paypal_calculator;
 pub(crate) mod shopify_calculator;
 pub(crate) mod stripe_calculator;
+pub(crate) mod sumup_calculator;
 
 pub(crate) struct SaleBreakdown {
     pub(crate) sale: f64,

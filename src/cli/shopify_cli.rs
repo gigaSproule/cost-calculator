@@ -106,7 +106,10 @@ pub(crate) fn shopify_calculator() {
                     .unwrap_or_else(|_| panic!("Unable to parse {}", delivery_costs.trim())),
                 international_or_amex.trim() == "y",
             );
-            println!("Charge: £{:.0}", charge_amount.total_to_charge);
+            println!(
+                "Charge: £{:.2} (with VAT £{:.2})",
+                charge_amount.total_to_charge, charge_amount.with_vat
+            );
         }
         "3" => exit(0),
         _ => {

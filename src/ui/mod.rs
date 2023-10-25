@@ -5,6 +5,7 @@ mod options_ui;
 mod paypal_ui;
 mod shopify_ui;
 mod stripe_ui;
+mod sumup_ui;
 
 pub(crate) fn load_ui() {
     let application = adw::Application::builder()
@@ -46,6 +47,9 @@ fn build_ui(application: &adw::Application) {
 
     let stripe_title = stripe_ui::stripe_options();
     stack.add_titled(&stripe_title, Option::<&str>::None, "Stripe");
+
+    let sumup_title = sumup_ui::sumup_options();
+    stack.add_titled(&sumup_title, Option::<&str>::None, "SumUp");
 
     let options_title = options_ui::options();
     stack.add_titled(&options_title, Option::<&str>::None, "Options");

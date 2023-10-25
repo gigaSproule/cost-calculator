@@ -233,18 +233,6 @@ fn cost_of_sale() -> gtk4::Grid {
         .build();
     container.attach(&revenue_value, 1, 16, 1, 1);
 
-    let revenue_label = gtk4::Label::builder()
-        .label("Revenue")
-        .halign(gtk4::Align::Start)
-        .valign(gtk4::Align::Center)
-        .build();
-    container.attach(&revenue_label, 0, 16, 1, 1);
-    let revenue_value = gtk4::Label::builder()
-        .halign(gtk4::Align::Start)
-        .valign(gtk4::Align::Center)
-        .build();
-    container.attach(&revenue_value, 1, 16, 1, 1);
-
     let percentage_kept_label = gtk4::Label::builder()
         .label("Percentage kept")
         .halign(gtk4::Align::Start)
@@ -414,7 +402,7 @@ fn how_much_to_charge() -> gtk4::Grid {
                 material_costs_input.set_value(0.0);
                 cost_of_delivery_input.set_value(0.0);
                 offsite_ads_used_input.set_active(false);
-                answer_label.set_text(&format!("Charge: £{:.0} (with VAT £{:.0})", charge_amount.total_to_charge, charge_amount.with_vat));
+                answer_label.set_text(&format!("Charge: £{:.2} (with VAT £{:.2})", charge_amount.total_to_charge, charge_amount.with_vat));
             }
         ),
     );

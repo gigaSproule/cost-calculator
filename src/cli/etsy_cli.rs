@@ -122,7 +122,7 @@ pub(crate) fn etsy_calculator() {
                 ads.trim() == "y",
             );
             println!(
-                "Charge: £{:.0} (with VAT £{:.0})",
+                "Charge: £{:.2} (with VAT £{:.2})",
                 charge_amount.total_to_charge, charge_amount.with_vat
             );
         }

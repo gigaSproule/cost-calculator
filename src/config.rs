@@ -38,8 +38,13 @@ fn get_config_path() -> String {
 }
 
 pub(crate) fn get_config() -> Config {
-    let config: Config = confy::load_path(&get_config_path()).expect("Unable to read config");
-    config
+    let stored_config = confy::load_path(&get_config_path());
+    if stored_config.is_err() {
+        let config = Config::default();
+        store_config(&config);
+        return config;
+    }
+    stored_config.unwrap()
 }
 
 pub(crate) fn store_config(config: &Config) {
