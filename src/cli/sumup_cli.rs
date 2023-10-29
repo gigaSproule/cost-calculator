@@ -1,6 +1,9 @@
 use std::{io, process::exit};
 
-use crate::calculator::sumup_calculator::{self, PaymentOption, SubscriptionOption};
+use crate::calculator::{
+    sumup_calculator::{self, PaymentOption, SubscriptionOption},
+    Material,
+};
 
 pub(crate) fn sumup_calculator() {
     println!("What is you want to do?");
@@ -185,10 +188,13 @@ pub(crate) fn sumup_calculator() {
                     .trim()
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", minutes.trim())),
-                material_costs
-                    .trim()
-                    .parse::<f64>()
-                    .unwrap_or_else(|_| panic!("Unable to parse {}", material_costs.trim())),
+                vec![Material {
+                    name: String::from("Material costs"),
+                    value: material_costs
+                        .trim()
+                        .parse::<f64>()
+                        .unwrap_or_else(|_| panic!("Unable to parse {}", material_costs.trim())),
+                }],
                 if card_reader.trim() == "y" {
                     PaymentOption::CardReader
                 } else if pos_lite.trim() == "y" {

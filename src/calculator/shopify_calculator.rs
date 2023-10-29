@@ -1,6 +1,6 @@
 use crate::config;
 
-use super::{ChargeAmount, SaleBreakdown};
+use super::{ChargeAmount, Material, SaleBreakdown};
 
 const PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.02;
 const INTERNATIONAL_AMEX_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.031;
@@ -45,14 +45,15 @@ pub(crate) fn based_on_sale(
 
 pub(crate) fn how_much_to_charge(
     number_of_minutes: f64,
-    material_costs: f64,
+    material_costs: Vec<Material>,
     delivery_costs: f64,
     international_or_amex: bool,
 ) -> ChargeAmount {
     let config = config::get_config();
 
+    let total_material_costs: f64 = material_costs.iter().map(|material| material.value).sum();
     let base_charge =
-        ((number_of_minutes / 60.0) * config.hourly_rate) + material_costs + delivery_costs;
+        ((number_of_minutes / 60.0) * config.hourly_rate) + total_material_costs + delivery_costs;
     let payment_processing_percentage = if international_or_amex {
         INTERNATIONAL_AMEX_PAYMENT_PROCESSING_PERCENTAGE
     } else {

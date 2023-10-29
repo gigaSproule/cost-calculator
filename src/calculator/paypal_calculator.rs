@@ -3,6 +3,8 @@ use crate::{
     config,
 };
 
+use super::Material;
+
 const PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.015;
 const EEA_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.025;
 const INTERNATIONAL_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.035;
@@ -53,15 +55,16 @@ pub(crate) fn based_on_sale(
 
 pub(crate) fn how_much_to_charge(
     number_of_minutes: f64,
-    material_costs: f64,
+    material_costs: Vec<Material>,
     delivery_costs: f64,
     eea: bool,
     international: bool,
 ) -> ChargeAmount {
     let config = config::get_config();
 
+    let total_material_costs: f64 = material_costs.iter().map(|material| material.value).sum();
     let base_charge =
-        ((number_of_minutes / 60.0) * config.hourly_rate) + material_costs + delivery_costs;
+        ((number_of_minutes / 60.0) * config.hourly_rate) + total_material_costs + delivery_costs;
     let additional_payment_processing_percentage = if eea {
         EEA_PAYMENT_PROCESSING_PERCENTAGE
     } else if international {

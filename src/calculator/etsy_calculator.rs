@@ -3,6 +3,8 @@ use crate::{
     config,
 };
 
+use super::Material;
+
 const TRANSACTION_FEE: f64 = 0.065;
 const PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.04;
 const PAYMENT_PROCESSING_FEE: f64 = 0.2;
@@ -59,14 +61,15 @@ pub(crate) fn based_on_sale(sale: f64, delivery_costs: f64, offsite_ads: bool) -
 
 pub(crate) fn how_much_to_charge(
     number_of_minutes: f64,
-    material_costs: f64,
+    material_costs: Vec<Material>,
     delivery_costs: f64,
     offsite_ads: bool,
 ) -> ChargeAmount {
     let config = config::get_config();
 
+    let total_material_costs: f64 = material_costs.iter().map(|material| material.value).sum();
     let base_charge =
-        ((number_of_minutes / 60.0) * config.hourly_rate) + material_costs + delivery_costs;
+        ((number_of_minutes / 60.0) * config.hourly_rate) + total_material_costs + delivery_costs;
     let offsite_ads_cost = if offsite_ads {
         base_charge * OFFSITE_ADS_FEE
     } else {

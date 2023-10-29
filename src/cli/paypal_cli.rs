@@ -1,6 +1,6 @@
 use std::{io, process::exit};
 
-use crate::calculator::paypal_calculator;
+use crate::calculator::{paypal_calculator, Material};
 
 pub(crate) fn paypal_calculator() {
     println!("What is you want to do?");
@@ -117,10 +117,13 @@ pub(crate) fn paypal_calculator() {
                     .trim()
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", minutes.trim())),
-                material_costs
-                    .trim()
-                    .parse::<f64>()
-                    .unwrap_or_else(|_| panic!("Unable to parse {}", material_costs.trim())),
+                vec![Material {
+                    name: String::from("Material costs"),
+                    value: material_costs
+                        .trim()
+                        .parse::<f64>()
+                        .unwrap_or_else(|_| panic!("Unable to parse {}", material_costs.trim())),
+                }],
                 delivery_costs
                     .trim()
                     .parse::<f64>()

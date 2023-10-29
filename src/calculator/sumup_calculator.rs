@@ -3,6 +3,8 @@ use crate::{
     config,
 };
 
+use super::Material;
+
 const TRANSACTION_FEE_CARD_READER_NO_CONTRACT: f64 = 0.0169;
 const TRANSACTION_FEE_POS_LITE_NO_CONTRACT: f64 = 0.0169;
 const TRANSACTION_FEE_TAP_TO_PAY_IPHONE_NO_CONTRACT: f64 = 0.0169;
@@ -100,13 +102,14 @@ pub(crate) fn based_on_sale(
 
 pub(crate) fn how_much_to_charge(
     number_of_minutes: f64,
-    material_costs: f64,
+    material_costs: Vec<Material>,
     payment_option: PaymentOption,
     subscription_option: SubscriptionOption,
 ) -> ChargeAmount {
     let config = config::get_config();
 
-    let base_charge = ((number_of_minutes / 60.0) * config.hourly_rate) + material_costs;
+    let total_material_costs: f64 = material_costs.iter().map(|material| material.value).sum();
+    let base_charge = ((number_of_minutes / 60.0) * config.hourly_rate) + total_material_costs;
 
     let transaction_fee = match payment_option {
         PaymentOption::CardReader => {

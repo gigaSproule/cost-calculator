@@ -1,6 +1,6 @@
 use std::{io, process::exit};
 
-use crate::calculator::shopify_calculator;
+use crate::calculator::{shopify_calculator, Material};
 
 pub(crate) fn shopify_calculator() {
     println!("What is you want to do?");
@@ -96,10 +96,13 @@ pub(crate) fn shopify_calculator() {
                     .trim()
                     .parse::<f64>()
                     .unwrap_or_else(|_| panic!("Unable to parse {}", minutes.trim())),
-                material_costs
-                    .trim()
-                    .parse::<f64>()
-                    .unwrap_or_else(|_| panic!("Unable to parse {}", material_costs.trim())),
+                vec![Material {
+                    name: String::from("Material costs"),
+                    value: material_costs
+                        .trim()
+                        .parse::<f64>()
+                        .unwrap_or_else(|_| panic!("Unable to parse {}", material_costs.trim())),
+                }],
                 delivery_costs
                     .trim()
                     .parse::<f64>()
