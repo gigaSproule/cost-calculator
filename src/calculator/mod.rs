@@ -21,11 +21,6 @@ pub(crate) struct SaleBreakdown {
     pub(crate) max_working_hours: f64,
 }
 
-pub(crate) struct Material {
-    pub(crate) name: String,
-    pub(crate) value: f64,
-}
-
 pub(crate) struct ChargeAmount {
     pub(crate) total_to_charge: f64,
     pub(crate) with_vat: f64,

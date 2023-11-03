@@ -6,9 +6,9 @@ use std::{
 
 use gtk4::{glib::clone, prelude::*};
 
-use crate::calculator::{
-    sumup_calculator::{self, PaymentOption, SubscriptionOption},
-    Material,
+use crate::{
+    calculator::sumup_calculator::{self, PaymentOption, SubscriptionOption},
+    store::materials::Material,
 };
 
 fn to_payment_option(id: &str) -> PaymentOption {

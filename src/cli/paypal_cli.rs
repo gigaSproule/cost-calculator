@@ -1,6 +1,6 @@
 use std::{io, process::exit};
 
-use crate::calculator::{paypal_calculator, Material};
+use crate::{calculator::paypal_calculator, store::materials::Material};
 
 pub(crate) fn paypal_calculator() {
     println!("What is you want to do?");

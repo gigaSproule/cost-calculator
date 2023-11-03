@@ -6,7 +6,7 @@ use ui::load_ui;
 
 mod calculator;
 mod cli;
-mod config;
+mod store;
 mod ui;
 
 fn main() {
@@ -14,6 +14,6 @@ fn main() {
     if args.contains(&String::from("--cli")) {
         load_cli();
     } else {
-        load_ui()
+        load_ui();
     }
 }

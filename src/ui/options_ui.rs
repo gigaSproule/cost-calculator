@@ -1,6 +1,6 @@
 use gtk4::{glib::clone, prelude::*};
 
-use crate::config::{self, get_config, Config};
+use crate::store::config::{self, get_config, Config};
 
 pub(crate) fn options() -> gtk4::Grid {
     let existing_config = get_config();

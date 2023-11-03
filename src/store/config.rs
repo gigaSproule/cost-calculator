@@ -1,6 +1,6 @@
-use std::env;
-
 use serde::{Deserialize, Serialize};
+
+use crate::store::get_store_path;
 
 const CONFIG_PATH: &str = "calculator_config.toml";
 const MINIMUM_WAGE: f64 = 10.42;
@@ -28,23 +28,17 @@ impl Default for Config {
 }
 
 fn get_config_path() -> String {
-    let config_dir = match env::consts::OS {
-        "windows" => env::var("LOCALAPPDATA").unwrap(),
-        "linux" => env::var("XDG_CONFIG_HOME").unwrap_or(env::var("HOME").unwrap() + "/.config"),
-        "macos" => env::var("HOME").unwrap() + "/Library/Preferences",
-        _ => String::new(),
-    };
-    format!("{}/{}", config_dir, CONFIG_PATH)
+    format!("{}/{}", get_store_path(), CONFIG_PATH)
 }
 
 pub(crate) fn get_config() -> Config {
     let stored_config = confy::load_path(&get_config_path());
-    if stored_config.is_err() {
-        let config = Config::default();
-        store_config(&config);
-        return config;
+    if stored_config.is_ok() {
+        return stored_config.unwrap();
     }
-    stored_config.unwrap()
+    let config = Config::default();
+    store_config(&config);
+    config
 }
 
 pub(crate) fn store_config(config: &Config) {

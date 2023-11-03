@@ -1,8 +1,8 @@
 use std::{io, process::exit};
 
-use crate::calculator::{
-    sumup_calculator::{self, PaymentOption, SubscriptionOption},
-    Material,
+use crate::{
+    calculator::sumup_calculator::{self, PaymentOption, SubscriptionOption},
+    store::materials::Material,
 };
 
 pub(crate) fn sumup_calculator() {

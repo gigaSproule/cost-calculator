@@ -1,9 +1,8 @@
 use crate::{
     calculator::{ChargeAmount, SaleBreakdown},
-    config,
+    store::config,
+    store::materials::Material,
 };
-
-use super::Material;
 
 const TRANSACTION_FEE_CARD_READER_NO_CONTRACT: f64 = 0.0169;
 const TRANSACTION_FEE_POS_LITE_NO_CONTRACT: f64 = 0.0169;

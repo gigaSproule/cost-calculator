@@ -1,6 +1,6 @@
 use std::io;
 
-use crate::config;
+use crate::store::config;
 
 pub(crate) fn set_config_options() {
     let mut config = config::get_config();

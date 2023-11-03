@@ -6,7 +6,7 @@ use std::{
 
 use gtk4::{glib::clone, prelude::*};
 
-use crate::calculator::{stripe_calculator, Material};
+use crate::{calculator::stripe_calculator, store::materials::Material};
 
 pub(crate) fn stripe_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);

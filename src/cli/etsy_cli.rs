@@ -1,6 +1,6 @@
 use std::{io, process::exit};
 
-use crate::calculator::{etsy_calculator, Material};
+use crate::{calculator::etsy_calculator, store::materials::Material};
 
 pub(crate) fn etsy_calculator() {
     println!("What is you want to do?");

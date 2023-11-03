@@ -1,6 +1,6 @@
 use std::{io, process::exit};
 
-use crate::calculator::{stripe_calculator, Material};
+use crate::{calculator::stripe_calculator, store::materials::Material};
 
 pub(crate) fn stripe_calculator() {
     println!("What is you want to do?");

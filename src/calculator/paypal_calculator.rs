@@ -1,9 +1,8 @@
 use crate::{
     calculator::{ChargeAmount, SaleBreakdown},
-    config,
+    store::config,
+    store::materials::Material,
 };
-
-use super::Material;
 
 const PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.015;
 const EEA_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.025;
