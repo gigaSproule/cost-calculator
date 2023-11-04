@@ -400,6 +400,7 @@ fn how_much_to_charge() -> gtk4::Grid {
         material_costs_container.attach(&material_costs_label, 0, *rows, 1, 1);
         let material_costs_input = gtk4::CheckButton::builder()
             .name("material_costs")
+            .hexpand(true)
             .halign(Align::End)
             .build();
         material_costs_container.attach(&material_costs_input, 1, *rows, 1, 1);
