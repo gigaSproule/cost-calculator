@@ -4,9 +4,10 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use gtk4::{glib::clone, prelude::*};
+use gtk4::{Align, glib::clone, prelude::*};
 
 use crate::{calculator::shopify_calculator, store::materials::Material};
+use crate::store::materials::get_materials;
 
 pub(crate) fn shopify_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
@@ -358,59 +359,27 @@ fn how_much_to_charge() -> gtk4::Grid {
         .build();
     container.attach(&material_costs_frame, 0, 1, 2, 1);
 
-    let material_costs_label = gtk4::EditableLabel::builder()
-        .text("Material")
-        .halign(gtk4::Align::Start)
-        .valign(gtk4::Align::Center)
-        .build();
-    material_costs_container.attach(&material_costs_label, 0, 0, 1, 1);
-    let material_costs_adjustment = gtk4::Adjustment::new(0.0, 0.0, 1000.0, 0.01, 5.0, 0.0);
-    let material_costs_input = gtk4::SpinButton::builder()
-        .name("material_costs")
-        .hexpand(true)
-        .adjustment(&material_costs_adjustment)
-        .climb_rate(0.5)
-        .numeric(true)
-        .digits(2)
-        .build();
-    material_costs_container.attach(&material_costs_input, 1, 0, 1, 1);
-    let add_material_costs = gtk4::Button::builder()
-        .icon_name("list-add-symbolic")
-        .halign(gtk4::Align::End)
-        .valign(gtk4::Align::End)
-        .build();
-    material_costs_wrapper.attach(&add_material_costs, 1, 1, 1, 1);
-
     let material_costs_container_rows: Rc<RefCell<i32>> = Rc::new(RefCell::new(1));
-    let material_costs_entries: Arc<Mutex<Vec<(gtk4::EditableLabel, gtk4::SpinButton)>>> = Arc::new(
-        Mutex::new(vec![(material_costs_label, material_costs_input)]),
-    );
+    let material_costs_entries: Arc<Mutex<Vec<(gtk4::Label, gtk4::CheckButton, f64)>>> =
+        Arc::new(Mutex::new(vec![]));
 
-    let material_costs_entries_add = material_costs_entries.clone();
-    add_material_costs.connect_clicked(clone!(@strong material_costs_container, @strong material_costs_container_rows =>
-        move |_| {
-            let material_costs_label = gtk4::EditableLabel::builder()
-                .text("Material")
-                .halign(gtk4::Align::Start)
-                .valign(gtk4::Align::Center)
-                .build();
-            let mut rows = material_costs_container_rows.borrow_mut();
-            material_costs_container.attach(&material_costs_label, 0, *rows, 1, 1);
-            let material_costs_adjustment = gtk4::Adjustment::new(0.0, 0.0, 1000.0, 0.01, 5.0, 0.0);
-            let material_costs_input = gtk4::SpinButton::builder()
-                .name("material_costs")
-                .hexpand(true)
-                .adjustment(&material_costs_adjustment)
-                .climb_rate(0.5)
-                .numeric(true)
-                .digits(2)
-                .build();
-            material_costs_container.attach(&material_costs_input, 1, *rows, 1, 1);
-            let mut material_entries = material_costs_entries_add.lock().unwrap();
-            material_entries.push((material_costs_label, material_costs_input));
-            *rows = *rows + 1;
-        }
-    ));
+    let materials = get_materials();
+    for material in materials {
+        let material_costs_label = gtk4::Label::builder()
+            .label(&material.name)
+            .halign(Align::Start)
+            .build();
+        let mut rows = material_costs_container_rows.borrow_mut();
+        material_costs_container.attach(&material_costs_label, 0, *rows, 1, 1);
+        let material_costs_input = gtk4::CheckButton::builder()
+            .name("material_costs")
+            .halign(Align::End)
+            .build();
+        material_costs_container.attach(&material_costs_input, 1, *rows, 1, 1);
+        let mut material_entries = material_costs_entries.lock().unwrap();
+        material_entries.push((material_costs_label, material_costs_input, material.value));
+        *rows = *rows + 1;
+    }
 
     let cost_of_delivery_label = gtk4::Label::builder()
         .label("Cost of delivery")
@@ -454,8 +423,14 @@ fn how_much_to_charge() -> gtk4::Grid {
     calculate.connect_clicked(
         clone!(@strong minutes_input, @strong material_costs_container, @strong material_costs_container_rows, @strong cost_of_delivery_input, @strong international_amex_input, @strong answer_label =>
             move |_| {
-                let mut material_entries = material_costs_entries_calculate.lock().unwrap();
-                let materials: Vec<Material> = material_entries.iter().map(|(label, entry)| {Material {name: label.text().to_string(), value: entry.value()}}).collect();
+                let material_entries = material_costs_entries_calculate.lock().unwrap();
+                let materials: Vec<Material> = material_entries.iter()
+                    .filter(|(_, entry, _)| {
+                        entry.is_active()
+                    })
+                    .map(|(label, _, value)| {
+                        Material { name: label.text().to_string(), value: value.clone() }
+                    }).collect();
                 let charge_amount = shopify_calculator::how_much_to_charge(
                     minutes_input.value(),
                     materials,
@@ -463,18 +438,9 @@ fn how_much_to_charge() -> gtk4::Grid {
                     international_amex_input.is_active(),
                 );
                 minutes_input.set_value(0.0);
-                let mut updated_first: bool = false;
-                material_entries.iter().for_each(|(label, entry)| {
-                    if !updated_first {
-                        entry.set_value(0.0);
-                        updated_first = true;
-                    } else {
-                        material_costs_container.remove(label);
-                        material_costs_container.remove(entry);
-                    }
+                material_entries.iter().for_each(|(_, entry, _)| {
+                    entry.set_active(false);
                 });
-                *material_costs_container_rows.borrow_mut() = 1;
-                *material_entries = vec![material_entries.first().unwrap().to_owned()];
                 cost_of_delivery_input.set_value(0.0);
                 international_amex_input.set_active(false);
                 answer_label.set_text(&format!("Charge: £{:.2} (with VAT £{:.2})", charge_amount.total_to_charge, charge_amount.with_vat));
