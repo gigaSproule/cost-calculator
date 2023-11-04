@@ -27,9 +27,7 @@ struct StoredMaterial {
 
 impl Default for StoredMaterial {
     fn default() -> Self {
-        Self {
-            materials: vec![]
-        }
+        Self { materials: vec![] }
     }
 }
 
@@ -48,9 +46,7 @@ pub(crate) fn get_materials() -> Vec<Material> {
 }
 
 pub(crate) fn store_materials(materials: Vec<Material>) {
-    let stored_material = StoredMaterial {
-        materials
-    };
+    let stored_material = StoredMaterial { materials };
     confy::store_path(&get_material_store_path(), stored_material)
         .expect("Unable to store updated materials");
 }
