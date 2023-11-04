@@ -1,6 +1,6 @@
-use crate::store::{config, materials::Material};
+use crate::store::config;
 
-use super::{ChargeAmount, SaleBreakdown};
+use super::{ChargeAmount, Material, SaleBreakdown};
 
 const PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.015;
 const EU_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.025;

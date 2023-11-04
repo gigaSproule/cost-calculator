@@ -26,6 +26,11 @@ pub(crate) struct ChargeAmount {
     pub(crate) with_vat: f64,
 }
 
+pub(crate) struct Material {
+    pub(crate) name: String,
+    pub(crate) value: f64,
+}
+
 trait Calculator {
     fn based_on_sale() -> SaleBreakdown;
     fn how_much_to_charge() -> ChargeAmount;

@@ -6,11 +6,8 @@ use std::{
 
 use gtk4::{glib::clone, prelude::*, Align};
 
-use crate::store::materials::get_materials;
-use crate::{
-    calculator::sumup_calculator::{self, PaymentOption, SubscriptionOption},
-    store::materials::Material,
-};
+use crate::calculator::sumup_calculator::{self, PaymentOption, SubscriptionOption};
+use crate::{calculator::Material, store::materials::get_materials};
 
 fn to_payment_option(id: &str) -> PaymentOption {
     match id {

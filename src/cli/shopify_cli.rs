@@ -1,6 +1,6 @@
 use std::{io, process::exit};
 
-use crate::{calculator::shopify_calculator, store::materials::Material};
+use crate::calculator::{shopify_calculator, Material};
 
 pub(crate) fn shopify_calculator() {
     println!("What is you want to do?");

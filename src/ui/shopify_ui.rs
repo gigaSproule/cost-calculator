@@ -6,8 +6,8 @@ use std::{
 
 use gtk4::{glib::clone, prelude::*, Align};
 
-use crate::store::materials::get_materials;
-use crate::{calculator::shopify_calculator, store::materials::Material};
+use crate::calculator::shopify_calculator;
+use crate::{calculator::Material, store::materials::get_materials};
 
 pub(crate) fn shopify_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
