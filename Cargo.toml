@@ -10,4 +10,4 @@ adw = { version = "0.5.3", package = "libadwaita", features = [ "gtk_v4_6" ] }
 confy = "0.5.1"
 dirs = "5.0.1"
 gtk4 = { version = "0.7.3", features = [ "v4_6" ] }
-serde = { version = "1.0.194", features = [ "derive" ] }
+serde = { version = "1.0.195", features = [ "derive" ] }
