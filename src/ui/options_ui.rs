@@ -1,8 +1,9 @@
+use adw::ApplicationWindow;
 use gtk4::{glib::clone, prelude::*};
 
 use crate::store::config::{self, get_config, Config};
 
-pub(crate) fn options() -> gtk4::Grid {
+pub(crate) fn options(window: &ApplicationWindow) -> gtk4::Grid {
     let existing_config = get_config();
 
     let container = gtk4::Grid::builder()
@@ -106,7 +107,7 @@ pub(crate) fn options() -> gtk4::Grid {
         .valign(gtk4::Align::Center)
         .build();
     save.connect_clicked(
-        clone!(@strong markup_percentage_input, @strong hourly_rate_input, @strong tax_rate_input, @strong vat_input =>
+        clone!(@strong markup_percentage_input, @strong hourly_rate_input, @strong tax_rate_input, @strong vat_input, @strong window =>
             move |_| {
                 let config = Config {
                     markup_percentage: markup_percentage_input.value(),
@@ -116,6 +117,18 @@ pub(crate) fn options() -> gtk4::Grid {
                     currency: currency_input.text().to_string(),
                 };
                 config::store_config(&config);
+                
+                let saved_dialog = gtk4::MessageDialog::builder()
+                    .modal(true)
+                    .text("Options saved.")
+                    .buttons(gtk4::ButtonsType::Ok)
+                    .message_type(gtk4::MessageType::Info)
+                    .transient_for(&window)
+                    .build();
+                saved_dialog.connect_response(|dialog, _| {
+                    dialog.close();
+                });
+                saved_dialog.show();
             }
         ),
     );

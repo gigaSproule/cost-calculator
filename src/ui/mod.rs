@@ -52,10 +52,10 @@ fn build_ui(application: &adw::Application) {
     let sumup_title = sumup_ui::sumup_options();
     stack.add_titled(&sumup_title, Option::<&str>::None, "SumUp");
 
-    let materials_title = materials_ui::materials();
+    let materials_title = materials_ui::materials(&window);
     stack.add_titled(&materials_title, Option::<&str>::None, "Materials");
 
-    let options_title = options_ui::options();
+    let options_title = options_ui::options(&window);
     stack.add_titled(&options_title, Option::<&str>::None, "Options");
 
     body.append(&side_stack);

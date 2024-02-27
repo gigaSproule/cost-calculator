@@ -4,12 +4,12 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use adw::glib::GString;
+use adw::{glib::GString, ApplicationWindow};
 use gtk4::{glib::clone, prelude::*};
 
 use crate::{store, store::materials::get_materials, store::materials::StoredMaterial};
 
-pub(crate) fn materials() -> gtk4::Grid {
+pub(crate) fn materials(window: &ApplicationWindow) -> gtk4::Grid {
     let mut existing_materials = get_materials();
     if existing_materials.len() == 0 {
         existing_materials = vec![StoredMaterial {
@@ -102,7 +102,7 @@ pub(crate) fn materials() -> gtk4::Grid {
         .build();
 
     let material_costs_entries_calculate = material_costs_entries.clone();
-    save.connect_clicked(clone!(@strong material_costs_container_rows =>
+    save.connect_clicked(clone!(@strong material_costs_container_rows, @strong window =>
         move |_| {
             let material_entries = material_costs_entries_calculate.lock().unwrap();
             let materials: Vec<StoredMaterial> = material_entries.iter().map(|(label, quantity_per_pack, price_per_pack)| {
@@ -114,6 +114,18 @@ pub(crate) fn materials() -> gtk4::Grid {
                 }
             }).collect();
             store::materials::store_materials(materials);
+                
+            let saved_dialog = gtk4::MessageDialog::builder()
+                .modal(true)
+                .text("Options saved.")
+                .buttons(gtk4::ButtonsType::Ok)
+                .message_type(gtk4::MessageType::Info)
+                .transient_for(&window)
+                .build();
+            saved_dialog.connect_response(|dialog, _| {
+                dialog.close();
+            });
+            saved_dialog.show();
         }
     ));
 
