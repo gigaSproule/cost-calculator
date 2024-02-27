@@ -15,7 +15,7 @@ pub(crate) struct StoredMaterial {
 impl Default for StoredMaterial {
     fn default() -> Self {
         Self {
-            name: String::from(""),
+            name: String::from("Material"),
             quantity_per_pack: 0.0,
             price_per_pack: 0.0,
             value: 0.0,

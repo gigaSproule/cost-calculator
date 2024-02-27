@@ -6,8 +6,10 @@ use std::{
 
 use gtk4::{glib::clone, prelude::*, Align};
 
-use crate::calculator::shopify_calculator;
-use crate::{calculator::Material, store::materials::get_materials};
+use crate::{
+    calculator::shopify_calculator, calculator::Material, store::config::get_config,
+    store::materials::get_materials,
+};
 
 pub(crate) fn shopify_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
@@ -270,6 +272,7 @@ fn cost_of_sale() -> gtk4::Grid {
             @strong regulatory_operating_fee_value, @strong vat_paid_by_buyer_value, @strong vat_on_seller_fees_value, @strong total_fees_value,
             @strong total_fees_with_vat_value, @strong tax_value, @strong revenue_value, @strong percentage_kept_value, @strong max_working_hours_value =>
             move |_| {
+                let config=get_config();
                 let sale_breakdown = shopify_calculator::based_on_sale(
                     cost_of_sale_input.value(),
                     cost_of_delivery_input.value(),
@@ -278,18 +281,18 @@ fn cost_of_sale() -> gtk4::Grid {
                 cost_of_sale_input.set_value(0.0);
                 cost_of_delivery_input.set_value(0.0);
                 international_amex_input.set_active(false);
-                sale_value.set_text(&format!("£{:.2}", sale_breakdown.sale));
-                delivery_costs_value.set_text(&format!("£{:.2}", sale_breakdown.delivery_costs));
-                transaction_cost_value.set_text(&format!("£{:.2}", sale_breakdown.transaction_cost));
-                payment_processing_cost_value.set_text(&format!("£{:.2}", sale_breakdown.payment_processing_cost));
-                offsite_ads_cost_value.set_text(&format!("£{:.2}", sale_breakdown.offsite_ads_cost));
-                regulatory_operating_fee_value.set_text(&format!("£{:.2}", sale_breakdown.regulatory_operating_fee));
-                vat_paid_by_buyer_value.set_text(&format!("£{:.2}", sale_breakdown.vat_paid_by_buyer));
-                vat_on_seller_fees_value.set_text(&format!("£{:.2}", sale_breakdown.vat_on_seller_fees));
-                total_fees_value.set_text(&format!("£{:.2}", sale_breakdown.total_fees));
-                total_fees_with_vat_value.set_text(&format!("£{:.2}", sale_breakdown.total_fees_with_vat));
-                tax_value.set_text(&format!("£{:.2}", sale_breakdown.tax));
-                revenue_value.set_text(&format!("£{:.2}", sale_breakdown.revenue));
+                sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
+                delivery_costs_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.delivery_costs));
+                transaction_cost_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.transaction_cost));
+                payment_processing_cost_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.payment_processing_cost));
+                offsite_ads_cost_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.offsite_ads_cost));
+                regulatory_operating_fee_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.regulatory_operating_fee));
+                vat_paid_by_buyer_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.vat_paid_by_buyer));
+                vat_on_seller_fees_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.vat_on_seller_fees));
+                total_fees_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.total_fees));
+                total_fees_with_vat_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.total_fees_with_vat));
+                tax_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.tax));
+                revenue_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.revenue));
                 percentage_kept_value.set_text(&format!("{:.2}%", sale_breakdown.percentage_kept));
                 max_working_hours_value.set_text(&format!("{}:{:02}", sale_breakdown.max_working_hours as i64, ((sale_breakdown.max_working_hours - ((sale_breakdown.max_working_hours as i64) as f64)) * 60.0) as i64));
             }
@@ -360,7 +363,7 @@ fn how_much_to_charge() -> gtk4::Grid {
     container.attach(&material_costs_frame, 0, 1, 2, 1);
 
     let material_costs_container_rows: Rc<RefCell<i32>> = Rc::new(RefCell::new(1));
-    let material_costs_entries: Arc<Mutex<Vec<(gtk4::Label, gtk4::CheckButton, f64)>>> =
+    let material_costs_entries: Arc<Mutex<Vec<(gtk4::Label, gtk4::SpinButton, f64)>>> =
         Arc::new(Mutex::new(vec![]));
 
     let materials = get_materials();
@@ -371,10 +374,15 @@ fn how_much_to_charge() -> gtk4::Grid {
             .build();
         let mut rows = material_costs_container_rows.borrow_mut();
         material_costs_container.attach(&material_costs_label, 0, *rows, 1, 1);
-        let material_costs_input = gtk4::CheckButton::builder()
+        let material_costs_adjustment = gtk4::Adjustment::new(0.0, 0.0, 100.0, 1.0, 5.0, 0.0);
+        let material_costs_input = gtk4::SpinButton::builder()
             .name("material_costs")
             .hexpand(true)
             .halign(Align::End)
+            .adjustment(&material_costs_adjustment)
+            .climb_rate(1.0)
+            .numeric(true)
+            .digits(0)
             .build();
         material_costs_container.attach(&material_costs_input, 1, *rows, 1, 1);
         let mut material_entries = material_costs_entries.lock().unwrap();
@@ -424,13 +432,14 @@ fn how_much_to_charge() -> gtk4::Grid {
     calculate.connect_clicked(
         clone!(@strong minutes_input, @strong material_costs_container, @strong material_costs_container_rows, @strong cost_of_delivery_input, @strong international_amex_input, @strong answer_label =>
             move |_| {
+                let config = get_config();
                 let material_entries = material_costs_entries_calculate.lock().unwrap();
                 let materials: Vec<Material> = material_entries.iter()
                     .filter(|(_, entry, _)| {
-                        entry.is_active()
+                        entry.value() > 0.0
                     })
-                    .map(|(label, _, value)| {
-                        Material { name: label.text().to_string(), value: value.clone() }
+                    .map(|(label, spin_button, value)| {
+                        Material { name: label.text().to_string(), value: spin_button.value() * value }
                     }).collect();
                 let charge_amount = shopify_calculator::how_much_to_charge(
                     minutes_input.value(),
@@ -440,11 +449,11 @@ fn how_much_to_charge() -> gtk4::Grid {
                 );
                 minutes_input.set_value(0.0);
                 material_entries.iter().for_each(|(_, entry, _)| {
-                    entry.set_active(false);
+                    entry.set_value(0.0);
                 });
                 cost_of_delivery_input.set_value(0.0);
                 international_amex_input.set_active(false);
-                answer_label.set_text(&format!("Charge: £{:.2} (with VAT £{:.2})", charge_amount.total_to_charge, charge_amount.with_vat));
+                answer_label.set_text(&format!("Charge: {}{:.2} (with VAT {}{:.2})", config.currency, charge_amount.total_to_charge, config.currency, charge_amount.with_vat));
             }
         ),
     );

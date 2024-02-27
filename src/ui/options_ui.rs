@@ -86,6 +86,20 @@ pub(crate) fn options() -> gtk4::Grid {
     vat_input.set_value(existing_config.vat);
     container.attach(&vat_input, 1, 3, 1, 1);
 
+    let currency_label = gtk4::Label::builder()
+        .label("Currency")
+        .halign(gtk4::Align::Start)
+        .valign(gtk4::Align::Center)
+        .build();
+    container.attach(&currency_label, 0, 4, 1, 1);
+    let currency_input = gtk4::Entry::builder()
+        .name("currency")
+        .hexpand(true)
+        .max_length(1)
+        .build();
+    currency_input.set_text(&existing_config.currency);
+    container.attach(&currency_input, 1, 4, 1, 1);
+
     let save = gtk4::Button::builder()
         .label("Save")
         .halign(gtk4::Align::End)
@@ -99,11 +113,12 @@ pub(crate) fn options() -> gtk4::Grid {
                     hourly_rate: hourly_rate_input.value(),
                     tax_rate: tax_rate_input.value(),
                     vat: vat_input.value(),
+                    currency: currency_input.text().to_string(),
                 };
                 config::store_config(&config);
             }
         ),
     );
-    container.attach(&save, 1, 4, 1, 1);
+    container.attach(&save, 1, 5, 1, 1);
     container
 }

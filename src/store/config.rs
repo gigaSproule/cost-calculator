@@ -6,6 +6,7 @@ const CONFIG_PATH: &str = "calculator_config.toml";
 const MINIMUM_WAGE: f64 = 10.42;
 const BASIC_RATE: f64 = 20.0;
 const VAT: f64 = 20.0;
+const CURRENCY: &str = "£";
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default)]
@@ -14,6 +15,7 @@ pub(crate) struct Config {
     pub(crate) hourly_rate: f64,
     pub(crate) tax_rate: f64,
     pub(crate) vat: f64,
+    pub(crate) currency: String,
 }
 
 impl Default for Config {
@@ -23,6 +25,7 @@ impl Default for Config {
             hourly_rate: MINIMUM_WAGE,
             tax_rate: BASIC_RATE,
             vat: VAT,
+            currency: String::from(CURRENCY),
         }
     }
 }
