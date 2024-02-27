@@ -95,12 +95,26 @@ fn cost_of_sale() -> gtk4::Grid {
     location_input.set_active_id(Some("local"));
     container.attach(&location_input, 1, 2, 1, 1);
 
+    let action_area = gtk4::Box::builder()
+        .halign(gtk4::Align::End)
+        .valign(gtk4::Align::End)
+        .build();
+    container.attach(&action_area, 1, 3, 1, 1);
+
+    let clear = gtk4::Button::builder()
+        .label("Clear")
+        .halign(gtk4::Align::End)
+        .valign(gtk4::Align::End)
+        .margin_end(12)
+        .build();
+    action_area.append(&clear);
+
     let calculate = gtk4::Button::builder()
         .label("Calculate")
         .halign(gtk4::Align::End)
         .valign(gtk4::Align::Center)
         .build();
-    container.attach(&calculate, 1, 3, 1, 1);
+    action_area.append(&calculate);
 
     let sale_label = gtk4::Label::builder()
         .label("Sale")
@@ -270,6 +284,16 @@ fn cost_of_sale() -> gtk4::Grid {
         .build();
     container.attach(&max_working_hours_value, 1, 18, 1, 1);
 
+    clear.connect_clicked(
+        clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong location_input =>
+            move |_| {
+                cost_of_sale_input.set_value(0.0);
+                cost_of_delivery_input.set_value(0.0);
+                location_input.set_active_id(Some("local"));
+            }
+        ),
+    );
+
     calculate.connect_clicked(
         clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong location_input, @strong sale_value,
             @strong delivery_costs_value, @strong transaction_cost_value, @strong payment_processing_cost_value, @strong offsite_ads_cost_value,
@@ -283,9 +307,6 @@ fn cost_of_sale() -> gtk4::Grid {
                     location_input.active_id().unwrap() == "eu",
                     location_input.active_id().unwrap() == "lnternational",
                 );
-                cost_of_sale_input.set_value(0.0);
-                cost_of_delivery_input.set_value(0.0);
-                location_input.set_active_id(Some("local"));
                 sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
                 delivery_costs_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.delivery_costs));
                 transaction_cost_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.transaction_cost));
@@ -427,19 +448,49 @@ fn how_much_to_charge() -> gtk4::Grid {
     location_input.set_active_id(Some("local"));
     container.attach(&location_input, 1, 3, 1, 1);
 
+    let action_area = gtk4::Box::builder()
+        .halign(gtk4::Align::End)
+        .valign(gtk4::Align::End)
+        .build();
+    container.attach(&action_area, 1, 4, 1, 1);
+
+    let clear = gtk4::Button::builder()
+        .label("Clear")
+        .halign(gtk4::Align::End)
+        .valign(gtk4::Align::End)
+        .margin_end(12)
+        .build();
+    action_area.append(&clear);
+
     let calculate = gtk4::Button::builder()
         .label("Calculate")
         .halign(gtk4::Align::End)
         .valign(gtk4::Align::End)
         .build();
-    container.attach(&calculate, 1, 4, 1, 1);
+    action_area.append(&calculate);
 
     let answer_label = gtk4::Label::builder().halign(gtk4::Align::Start).build();
     container.attach(&answer_label, 0, 5, 2, 1);
 
+    let material_costs_entries_clear = material_costs_entries.clone();
+    clear.connect_clicked(
+        clone!(@strong minutes_input, @strong cost_of_delivery_input, @strong location_input, @strong answer_label =>
+            move |_| {
+                let material_entries = material_costs_entries_clear.lock().unwrap();
+                minutes_input.set_value(0.0);
+                material_entries.iter().for_each(|(_, entry, _)| {
+                    entry.set_value(0.0);
+                });
+                cost_of_delivery_input.set_value(0.0);
+                location_input.set_active_id(Some("local"));
+                answer_label.set_text("");
+            }
+        )
+    );
+
     let material_costs_entries_calculate = material_costs_entries.clone();
     calculate.connect_clicked(
-        clone!(@strong minutes_input, @strong material_costs_container, @strong material_costs_container_rows, @strong cost_of_delivery_input, @strong location_input, @strong answer_label =>
+        clone!(@strong minutes_input, @strong cost_of_delivery_input, @strong location_input, @strong answer_label =>
             move |_| {
                 let config = get_config();
                 let material_entries = material_costs_entries_calculate.lock().unwrap();
@@ -457,12 +508,6 @@ fn how_much_to_charge() -> gtk4::Grid {
                     location_input.active_id().unwrap() == "eu",
                     location_input.active_id().unwrap() == "international",
                 );
-                minutes_input.set_value(0.0);
-                material_entries.iter().for_each(|(_, entry, _)| {
-                    entry.set_value(0.0);
-                });
-                cost_of_delivery_input.set_value(0.0);
-                location_input.set_active_id(Some("local"));
                 answer_label.set_text(&format!("Charge: {}{:.2} (with VAT {}{:.2})", config.currency, charge_amount.total_to_charge,config.currency,  charge_amount.with_vat));
             }
         ),
