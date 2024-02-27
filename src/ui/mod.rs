@@ -1,4 +1,4 @@
-use adw::prelude::*;
+use adw::{gdk::Display, prelude::*};
 
 mod etsy_ui;
 mod materials_ui;
@@ -12,8 +12,19 @@ pub(crate) fn load_ui() {
     let application = adw::Application::builder()
         .application_id("com.benjaminsproule.cost-calculator")
         .build();
+    application.connect_startup(|_| load_css());
     application.connect_activate(build_ui);
     application.run();
+}
+
+fn load_css() {
+    let provider = gtk4::CssProvider::new();
+    provider.load_from_data(include_str!("style.css"));
+    gtk4::StyleContext::add_provider_for_display(
+        &Display::default().expect("Could not connect to a display"),
+        &provider,
+        gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
 }
 
 fn build_ui(application: &adw::Application) {

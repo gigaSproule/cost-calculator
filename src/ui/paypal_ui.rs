@@ -388,18 +388,40 @@ fn how_much_to_charge() -> gtk4::Grid {
         .build();
     container.attach(&material_costs_frame, 0, 1, 2, 1);
 
-    let material_costs_container_rows: Rc<RefCell<i32>> = Rc::new(RefCell::new(1));
+    let material_costs_list_box = gtk4::ListBox::builder()
+        .selection_mode(gtk4::SelectionMode::None)
+        .margin_top(5)
+        .margin_bottom(5)
+        .css_name("no-background")
+        .build();
+
+    let material_costs_frame = gtk4::Frame::builder()
+        .label("Cost of materials")
+        .child(&material_costs_list_box)
+        .build();
+    container.attach(&material_costs_frame, 0, 1, 2, 1);
+
     let material_costs_entries: Arc<Mutex<Vec<(gtk4::Label, gtk4::SpinButton, f64)>>> =
         Arc::new(Mutex::new(vec![]));
-
     let materials = get_materials();
     for material in materials {
+        let material_costs_list_child = gtk4::ListBoxRow::builder()
+            .margin_start(5)
+            .margin_top(2)
+            .margin_bottom(2)
+            .activatable(false)
+            .build();
+        material_costs_list_box.append(&material_costs_list_child);
+
+        let material_costs_box = gtk4::Box::builder().build();
+        material_costs_list_child.set_child(Some(&material_costs_box));
+
         let material_costs_label = gtk4::Label::builder()
             .label(&material.name)
             .halign(Align::Start)
             .build();
-        let mut rows = material_costs_container_rows.borrow_mut();
-        material_costs_container.attach(&material_costs_label, 0, *rows, 1, 1);
+        material_costs_box.append(&material_costs_label);
+
         let material_costs_adjustment = gtk4::Adjustment::new(0.0, 0.0, 100.0, 1.0, 5.0, 0.0);
         let material_costs_input = gtk4::SpinButton::builder()
             .name("material_costs")
@@ -410,10 +432,10 @@ fn how_much_to_charge() -> gtk4::Grid {
             .numeric(true)
             .digits(0)
             .build();
-        material_costs_container.attach(&material_costs_input, 1, *rows, 1, 1);
+        material_costs_box.append(&material_costs_input);
+
         let mut material_entries = material_costs_entries.lock().unwrap();
         material_entries.push((material_costs_label, material_costs_input, material.value));
-        *rows = *rows + 1;
     }
 
     let cost_of_delivery_label = gtk4::Label::builder()
