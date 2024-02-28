@@ -430,6 +430,7 @@ fn how_much_to_charge() -> gtk4::Grid {
             .margin_top(2)
             .margin_bottom(2)
             .activatable(false)
+            .focusable(false)
             .build();
         material_costs_list_box.append(&material_costs_list_child);
 
