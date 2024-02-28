@@ -75,11 +75,7 @@ pub(crate) fn materials(window: &ApplicationWindow) -> gtk4::Grid {
     > = Arc::new(Mutex::new(vec![]));
 
     for material in existing_materials {
-        add_material_row(
-            &material_costs_list_box,
-            &material_costs_entries,
-            material,
-        );
+        add_material_row(&material_costs_list_box, &material_costs_entries, material);
     }
 
     let add_material_costs = gtk4::Button::builder()
@@ -116,7 +112,7 @@ pub(crate) fn materials(window: &ApplicationWindow) -> gtk4::Grid {
                 }
             }).collect();
             store::materials::store_materials(materials);
-                
+
             let saved_dialog = gtk4::MessageDialog::builder()
                 .modal(true)
                 .text("Options saved.")
@@ -143,16 +139,16 @@ fn add_material_row(
     material: StoredMaterial,
 ) {
     let material_costs_list_child = gtk4::ListBoxRow::builder()
-            .margin_start(5)
-            .margin_top(2)
-            .margin_bottom(2)
-            .activatable(false)
-            .focusable(false)
-            .build();
-        material_costs_list_box.append(&material_costs_list_child);
+        .margin_start(5)
+        .margin_top(2)
+        .margin_bottom(2)
+        .activatable(false)
+        .focusable(false)
+        .build();
+    material_costs_list_box.append(&material_costs_list_child);
 
-        let material_costs_box = gtk4::Box::builder().build();
-        material_costs_list_child.set_child(Some(&material_costs_box));
+    let material_costs_box = gtk4::Box::builder().build();
+    material_costs_list_child.set_child(Some(&material_costs_box));
 
     let material_label = gtk4::EditableLabel::builder()
         .text(&material.name)
@@ -200,15 +196,17 @@ fn add_material_row(
     // TODO: Need to move material_costs_entries into a centralised place, so updates can be worked upon
     let material_costs_entries_remove = material_costs_entries.clone();
     let material_name = GString::from_string_unchecked(material.name.to_string());
-    material_remove.connect_clicked(clone!(@strong material_costs_list_box, @strong material_costs_list_child =>
-    move |_| {
-        let mut material_entries = material_costs_entries_remove.lock().unwrap();
-        let row = material_entries.iter().position(|entry| {
-            entry.0.text() == material_name
-        }).unwrap();
-        material_entries.remove(row);
-        material_costs_list_box.remove(&material_costs_list_child);
-    }));
+    material_remove.connect_clicked(
+        clone!(@strong material_costs_list_box, @strong material_costs_list_child =>
+        move |_| {
+            let mut material_entries = material_costs_entries_remove.lock().unwrap();
+            let row = material_entries.iter().position(|entry| {
+                entry.0.text() == material_name
+            }).unwrap();
+            material_entries.remove(row);
+            material_costs_list_box.remove(&material_costs_list_child);
+        }),
+    );
     material_costs_box.append(&material_remove);
 
     let mut material_entries = material_costs_entries.lock().unwrap();

@@ -117,7 +117,7 @@ pub(crate) fn options(window: &ApplicationWindow) -> gtk4::Grid {
                     currency: currency_input.text().to_string(),
                 };
                 config::store_config(&config);
-                
+
                 let saved_dialog = gtk4::MessageDialog::builder()
                     .modal(true)
                     .text("Options saved.")
