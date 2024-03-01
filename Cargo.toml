@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 adw = { version = "0.6.0", package = "libadwaita", features = [ "gtk_v4_6" ] }
-confy = "0.6.0"
+confy = "0.6.1"
 dirs = "5.0.1"
 gtk4 = { version = "0.8.0", features = [ "v4_6" ] }
 serde = { version = "1.0.197", features = [ "derive" ] }
