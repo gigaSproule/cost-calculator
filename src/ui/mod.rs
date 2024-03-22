@@ -20,11 +20,11 @@ pub(crate) fn load_ui() {
 fn load_css() {
     let provider = gtk4::CssProvider::new();
     provider.load_from_data(include_str!("style.css"));
-    gtk4::StyleContext::add_provider_for_display(
+    gtk4::style_context_add_provider_for_display(
         &Display::default().expect("Could not connect to a display"),
         &provider,
         gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
-    );
+    )
 }
 
 fn build_ui(application: &adw::Application) {
