@@ -9,5 +9,5 @@ edition = "2021"
 adw = { version = "0.7.0", package = "libadwaita", features = [ "gtk_v4_6" ] }
 confy = "0.6.1"
 dirs = "5.0.1"
-gtk4 = { version = "0.8.2", features = [ "v4_6" ] }
+gtk4 = { version = "0.9.0", features = [ "v4_6" ] }
 serde = { version = "1.0.200", features = [ "derive" ] }
