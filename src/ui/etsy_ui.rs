@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use gtk4::{Align, glib::clone, prelude::*};
+use gtk4::{glib::clone, prelude::*, Align};
 
 use crate::{
     calculator::etsy_calculator, calculator::Material, store::config::get_config,
@@ -347,8 +347,18 @@ fn how_much_to_charge() -> gtk4::Grid {
             return None;
         }
 
-        let hours = split.first().unwrap().replace(" ", "").parse::<f64>().unwrap();
-        let minutes = split.last().unwrap().replace(" ", "").parse::<f64>().unwrap();
+        let hours = split
+            .first()
+            .unwrap()
+            .replace(" ", "")
+            .parse::<f64>()
+            .unwrap();
+        let minutes = split
+            .last()
+            .unwrap()
+            .replace(" ", "")
+            .parse::<f64>()
+            .unwrap();
         Some(Ok((hours * 60.0) + minutes))
     });
     minutes_input.connect_output(|input| {
