@@ -10,7 +10,7 @@ lifecycle-runtime-ktx = "2.8.4"
 lifecycle-viewmodel-compose = "2.8.4"
 navigation = "2.8.0-beta06"
 androidGradlePlugin = "8.5.1"
-kotlin = "2.0.0"
+kotlin = "2.0.10"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
