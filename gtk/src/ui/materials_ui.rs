@@ -87,9 +87,17 @@ pub(crate) fn materials(window: &ApplicationWindow) -> gtk4::Grid {
     material_costs_wrapper.attach(&add_material_costs, 1, 1, 1, 1);
 
     let material_costs_entries_add = material_costs_entries.clone();
-    add_material_costs.connect_clicked(clone!(@strong material_costs_list_box, @strong material_costs_container =>
+    add_material_costs.connect_clicked(clone!(
+        #[strong]
+        material_costs_list_box,
+        #[strong]
+        material_costs_container,
         move |_| {
-            add_material_row(&material_costs_list_box, &material_costs_entries_add, StoredMaterial::default());
+            add_material_row(
+                &material_costs_list_box,
+                &material_costs_entries_add,
+                StoredMaterial::default(),
+            );
         }
     ));
 
@@ -100,17 +108,22 @@ pub(crate) fn materials(window: &ApplicationWindow) -> gtk4::Grid {
         .build();
 
     let material_costs_entries_calculate = material_costs_entries.clone();
-    save.connect_clicked(clone!(@strong window =>
+    save.connect_clicked(clone!(
+        #[strong]
+        window,
         move |_| {
             let material_entries = material_costs_entries_calculate.lock().unwrap();
-            let materials: Vec<StoredMaterial> = material_entries.iter().map(|(label, quantity_per_pack, price_per_pack)| {
-                StoredMaterial {
-                    name: label.text().to_string(),
-                    quantity_per_pack: quantity_per_pack.value(),
-                    price_per_pack: price_per_pack.value(),
-                    value: price_per_pack.value() / quantity_per_pack.value(),
-                }
-            }).collect();
+            let materials: Vec<StoredMaterial> = material_entries
+                .iter()
+                .map(
+                    |(label, quantity_per_pack, price_per_pack)| StoredMaterial {
+                        name: label.text().to_string(),
+                        quantity_per_pack: quantity_per_pack.value(),
+                        price_per_pack: price_per_pack.value(),
+                        value: price_per_pack.value() / quantity_per_pack.value(),
+                    },
+                )
+                .collect();
             store::materials::store_materials(materials);
 
             let saved_dialog = gtk4::MessageDialog::builder()
@@ -196,17 +209,21 @@ fn add_material_row(
     // TODO: Need to move material_costs_entries into a centralised place, so updates can be worked upon
     let material_costs_entries_remove = material_costs_entries.clone();
     let material_name = GString::from_string_unchecked(material.name.to_string());
-    material_remove.connect_clicked(
-        clone!(@strong material_costs_list_box, @strong material_costs_list_child =>
+    material_remove.connect_clicked(clone!(
+        #[strong]
+        material_costs_list_box,
+        #[strong]
+        material_costs_list_child,
         move |_| {
             let mut material_entries = material_costs_entries_remove.lock().unwrap();
-            let row = material_entries.iter().position(|entry| {
-                entry.0.text() == material_name
-            }).unwrap();
+            let row = material_entries
+                .iter()
+                .position(|entry| entry.0.text() == material_name)
+                .unwrap();
             material_entries.remove(row);
             material_costs_list_box.remove(&material_costs_list_child);
-        }),
-    );
+        }
+    ));
     material_costs_box.append(&material_remove);
 
     let mut material_entries = material_costs_entries.lock().unwrap();

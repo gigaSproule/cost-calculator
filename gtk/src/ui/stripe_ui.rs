@@ -2,12 +2,12 @@ use std::sync::{Arc, Mutex};
 
 use gtk4::{glib::clone, prelude::*, Align};
 
-use crate::{
-    calculator::etsy_calculator, calculator::Material, store::config::get_config,
-    store::materials::get_materials,
-};
+use calculators::stripe_calculator;
+use calculators::Material;
 
-pub(crate) fn etsy_options() -> gtk4::Box {
+use crate::{store::config::get_config, store::materials::get_materials};
+
+pub(crate) fn stripe_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
     let stack = gtk4::Stack::builder()
         .transition_type(gtk4::StackTransitionType::SlideLeftRight)
@@ -76,16 +76,20 @@ fn cost_of_sale() -> gtk4::Grid {
         .build();
     container.attach(&cost_of_delivery_input, 1, 1, 1, 1);
 
-    let offsite_ads_used_label = gtk4::Label::builder()
-        .label("Offsite ads used?")
+    let location_label = gtk4::Label::builder()
+        .label("Location of sale")
         .halign(gtk4::Align::Start)
         .valign(gtk4::Align::Center)
         .build();
-    container.attach(&offsite_ads_used_label, 0, 2, 1, 1);
-    let offsite_ads_used_input = gtk4::CheckButton::builder()
-        .name("offsite_ads_used")
+    container.attach(&location_label, 0, 2, 1, 1);
+    let location_input = gtk4::ComboBoxText::builder()
+        .name("location_of_sale")
         .build();
-    container.attach(&offsite_ads_used_input, 1, 2, 1, 1);
+    location_input.append(Some("local"), "Local");
+    location_input.append(Some("eu"), "EU");
+    location_input.append(Some("international"), "International");
+    location_input.set_active_id(Some("local"));
+    container.attach(&location_input, 1, 2, 1, 1);
 
     let action_area = gtk4::Box::builder()
         .halign(gtk4::Align::End)
@@ -276,45 +280,113 @@ fn cost_of_sale() -> gtk4::Grid {
         .build();
     container.attach(&max_working_hours_value, 1, 18, 1, 1);
 
-    clear.connect_clicked(
-        clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong offsite_ads_used_input =>
-            move |_| {
-                cost_of_sale_input.set_value(0.0);
-                cost_of_delivery_input.set_value(0.0);
-                offsite_ads_used_input.set_active(false);
-            }
-        ),
-    );
+    clear.connect_clicked(clone!(
+        #[strong]
+        cost_of_sale_input,
+        #[strong]
+        cost_of_delivery_input,
+        #[strong]
+        location_input,
+        move |_| {
+            cost_of_sale_input.set_value(0.0);
+            cost_of_delivery_input.set_value(0.0);
+            location_input.set_active_id(Some("local"));
+        }
+    ));
 
-    calculate.connect_clicked(
-        clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong offsite_ads_used_input, @strong sale_value,
-            @strong delivery_costs_value, @strong transaction_cost_value, @strong payment_processing_cost_value, @strong offsite_ads_cost_value,
-            @strong regulatory_operating_fee_value, @strong vat_paid_by_buyer_value, @strong vat_on_seller_fees_value, @strong total_fees_value,
-            @strong total_fees_with_vat_value, @strong tax_value, @strong revenue_value, @strong percentage_kept_value, @strong max_working_hours_value =>
-            move |_| {
-                let config = get_config();
-                let sale_breakdown = etsy_calculator::based_on_sale(
-                    cost_of_sale_input.value(),
-                    cost_of_delivery_input.value(),
-                    offsite_ads_used_input.is_active(),
-                );
-                sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
-                delivery_costs_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.delivery_costs));
-                transaction_cost_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.transaction_cost));
-                payment_processing_cost_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.payment_processing_cost));
-                offsite_ads_cost_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.offsite_ads_cost));
-                regulatory_operating_fee_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.regulatory_operating_fee));
-                vat_paid_by_buyer_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.vat_paid_by_buyer));
-                vat_on_seller_fees_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.vat_on_seller_fees));
-                total_fees_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.total_fees));
-                total_fees_with_vat_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.total_fees_with_vat));
-                tax_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.tax));
-                revenue_value.set_text(&format!("{}{:.2}", config.currency,sale_breakdown.revenue));
-                percentage_kept_value.set_text(&format!("{:.2}%", sale_breakdown.percentage_kept));
-                max_working_hours_value.set_text(&format!("{}:{:02}", sale_breakdown.max_working_hours as i64, ((sale_breakdown.max_working_hours - ((sale_breakdown.max_working_hours as i64) as f64)) * 60.0) as i64));
-            }
-        ),
-    );
+    calculate.connect_clicked(clone!(
+        #[strong]
+        cost_of_sale_input,
+        #[strong]
+        cost_of_delivery_input,
+        #[strong]
+        location_input,
+        #[strong]
+        sale_value,
+        #[strong]
+        delivery_costs_value,
+        #[strong]
+        transaction_cost_value,
+        #[strong]
+        payment_processing_cost_value,
+        #[strong]
+        offsite_ads_cost_value,
+        #[strong]
+        regulatory_operating_fee_value,
+        #[strong]
+        vat_paid_by_buyer_value,
+        #[strong]
+        vat_on_seller_fees_value,
+        #[strong]
+        total_fees_value,
+        #[strong]
+        total_fees_with_vat_value,
+        #[strong]
+        tax_value,
+        #[strong]
+        revenue_value,
+        #[strong]
+        percentage_kept_value,
+        #[strong]
+        max_working_hours_value,
+        move |_| {
+            let config = get_config();
+            let sale_breakdown = stripe_calculator::based_on_sale(
+                &config,
+                cost_of_sale_input.value(),
+                cost_of_delivery_input.value(),
+                location_input.active_id().unwrap() == "eu",
+                location_input.active_id().unwrap() == "lnternational",
+            );
+            sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
+            delivery_costs_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.delivery_costs
+            ));
+            transaction_cost_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.transaction_cost
+            ));
+            payment_processing_cost_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.payment_processing_cost
+            ));
+            offsite_ads_cost_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.offsite_ads_cost
+            ));
+            regulatory_operating_fee_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.regulatory_operating_fee
+            ));
+            vat_paid_by_buyer_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.vat_paid_by_buyer
+            ));
+            vat_on_seller_fees_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.vat_on_seller_fees
+            ));
+            total_fees_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.total_fees
+            ));
+            total_fees_with_vat_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.total_fees_with_vat
+            ));
+            tax_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.tax));
+            revenue_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.revenue));
+            percentage_kept_value.set_text(&format!("{:.2}%", sale_breakdown.percentage_kept));
+            max_working_hours_value.set_text(&format!(
+                "{}:{:02}",
+                sale_breakdown.max_working_hours as i64,
+                ((sale_breakdown.max_working_hours
+                    - ((sale_breakdown.max_working_hours as i64) as f64))
+                    * 60.0) as i64
+            ));
+        }
+    ));
     container
 }
 
@@ -347,18 +419,8 @@ fn how_much_to_charge() -> gtk4::Grid {
             return None;
         }
 
-        let hours = split
-            .first()
-            .unwrap()
-            .replace(" ", "")
-            .parse::<f64>()
-            .unwrap();
-        let minutes = split
-            .last()
-            .unwrap()
-            .replace(" ", "")
-            .parse::<f64>()
-            .unwrap();
+        let hours = split.first().unwrap().parse::<f64>().unwrap();
+        let minutes = split.last().unwrap().parse::<f64>().unwrap();
         Some(Ok((hours * 60.0) + minutes))
     });
     minutes_input.connect_output(|input| {
@@ -369,6 +431,25 @@ fn how_much_to_charge() -> gtk4::Grid {
         gtk4::glib::Propagation::Stop
     });
     container.attach(&minutes_input, 1, 0, 1, 1);
+
+    let material_costs_wrapper = gtk4::Grid::builder()
+        .margin_top(5)
+        .margin_bottom(5)
+        .row_spacing(5)
+        .column_spacing(5)
+        .build();
+    let material_costs_container = gtk4::Grid::builder()
+        .margin_top(5)
+        .margin_bottom(5)
+        .row_spacing(5)
+        .column_spacing(5)
+        .build();
+    material_costs_wrapper.attach(&material_costs_container, 0, 0, 2, 1);
+    let material_costs_frame = gtk4::Frame::builder()
+        .label("Cost of materials")
+        .child(&material_costs_wrapper)
+        .build();
+    container.attach(&material_costs_frame, 0, 1, 2, 1);
 
     let material_costs_list_box = gtk4::ListBox::builder()
         .selection_mode(gtk4::SelectionMode::None)
@@ -402,7 +483,6 @@ fn how_much_to_charge() -> gtk4::Grid {
         let material_costs_label = gtk4::Label::builder()
             .label(&material.name)
             .halign(Align::Start)
-            .valign(Align::Center)
             .build();
         material_costs_box.append(&material_costs_label);
 
@@ -439,16 +519,20 @@ fn how_much_to_charge() -> gtk4::Grid {
         .build();
     container.attach(&cost_of_delivery_input, 1, 2, 1, 1);
 
-    let offsite_ads_used_label = gtk4::Label::builder()
-        .label("Offsite ads used?")
+    let location_label = gtk4::Label::builder()
+        .label("Location of sale")
         .halign(gtk4::Align::Start)
         .valign(gtk4::Align::Center)
         .build();
-    container.attach(&offsite_ads_used_label, 0, 3, 1, 1);
-    let offsite_ads_used_input = gtk4::CheckButton::builder()
-        .name("offsite_ads_used")
+    container.attach(&location_label, 0, 3, 1, 1);
+    let location_input = gtk4::ComboBoxText::builder()
+        .name("loction_of_sale")
         .build();
-    container.attach(&offsite_ads_used_input, 1, 3, 1, 1);
+    location_input.append(Some("local"), "Local");
+    location_input.append(Some("eu"), "EU");
+    location_input.append(Some("international"), "International");
+    location_input.set_active_id(Some("local"));
+    container.attach(&location_input, 1, 3, 1, 1);
 
     let action_area = gtk4::Box::builder()
         .halign(gtk4::Align::End)
@@ -475,44 +559,64 @@ fn how_much_to_charge() -> gtk4::Grid {
     container.attach(&answer_label, 0, 5, 2, 1);
 
     let material_costs_entries_clear = material_costs_entries.clone();
-    clear.connect_clicked(
-        clone!(@strong minutes_input, @strong cost_of_delivery_input, @strong offsite_ads_used_input, @strong answer_label =>
-            move |_| {
-                let material_entries = material_costs_entries_clear.lock().unwrap();
-                minutes_input.set_value(0.0);
-                material_entries.iter().for_each(|(_, entry, _)| {
-                    entry.set_value(0.0);
-                });
-                cost_of_delivery_input.set_value(0.0);
-                offsite_ads_used_input.set_active(false);
-                answer_label.set_text("");
-            }
-        )
-    );
+    clear.connect_clicked(clone!(
+        #[strong]
+        minutes_input,
+        #[strong]
+        cost_of_delivery_input,
+        #[strong]
+        location_input,
+        #[strong]
+        answer_label,
+        move |_| {
+            let material_entries = material_costs_entries_clear.lock().unwrap();
+            minutes_input.set_value(0.0);
+            material_entries.iter().for_each(|(_, entry, _)| {
+                entry.set_value(0.0);
+            });
+            cost_of_delivery_input.set_value(0.0);
+            location_input.set_active_id(Some("local"));
+            answer_label.set_text("");
+        }
+    ));
 
     let material_costs_entries_calculate = material_costs_entries.clone();
-    calculate.connect_clicked(
-        clone!(@strong minutes_input, @strong cost_of_delivery_input, @strong offsite_ads_used_input, @strong answer_label =>
-            move |_| {
-                let config = get_config();
-                let material_entries = material_costs_entries_calculate.lock().unwrap();
-                let materials: Vec<Material> = material_entries.iter()
-                    .filter(|(_, entry, _)| {
-                        entry.value() > 0.0
-                    })
-                    .map(|(label, spin_button, value)| {
-                        Material { name: label.text().to_string(), value: spin_button.value() * value }
-                    }).collect();
-                let charge_amount = etsy_calculator::how_much_to_charge(
-                    minutes_input.value(),
-                    materials,
-                    cost_of_delivery_input.value(),
-                    offsite_ads_used_input.is_active(),
-                );
-
-                answer_label.set_text(&format!("Charge: {}{:.2} (with VAT {}{:.2})", config.currency,charge_amount.total_to_charge, config.currency,charge_amount.with_vat));
-            }
-        ),
-    );
+    calculate.connect_clicked(clone!(
+        #[strong]
+        minutes_input,
+        #[strong]
+        cost_of_delivery_input,
+        #[strong]
+        location_input,
+        #[strong]
+        answer_label,
+        move |_| {
+            let config = get_config();
+            let material_entries = material_costs_entries_calculate.lock().unwrap();
+            let materials: Vec<Material> = material_entries
+                .iter()
+                .filter(|(_, entry, _)| entry.value() > 0.0)
+                .map(|(label, spin_button, value)| Material {
+                    name: label.text().to_string(),
+                    value: spin_button.value() * value,
+                })
+                .collect();
+            let charge_amount = stripe_calculator::how_much_to_charge(
+                &config,
+                minutes_input.value(),
+                materials,
+                cost_of_delivery_input.value(),
+                location_input.active_id().unwrap() == "eu",
+                location_input.active_id().unwrap() == "international",
+            );
+            answer_label.set_text(&format!(
+                "Charge: {}{:.2} (with VAT {}{:.2})",
+                config.currency,
+                charge_amount.total_to_charge,
+                config.currency,
+                charge_amount.with_vat
+            ));
+        }
+    ));
     container
 }

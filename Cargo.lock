@@ -39,6 +39,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "calculators"
+version = "0.1.0"
+
+[[package]]
 name = "cfg-expr"
 version = "0.15.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -70,6 +74,7 @@ dependencies = [
 name = "cost-calculator"
 version = "0.1.0"
 dependencies = [
+ "calculators",
  "confy",
  "dirs",
  "gtk4",

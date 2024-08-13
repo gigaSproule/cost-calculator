@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use calculators::Config;
+
 use crate::store::get_store_path;
 
 const CONFIG_PATH: &str = "calculator_config.toml";
@@ -10,7 +12,7 @@ const CURRENCY: &str = "£";
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default)]
-pub(crate) struct Config {
+pub(crate) struct ConfigImpl {
     pub(crate) markup_percentage: f64,
     pub(crate) hourly_rate: f64,
     pub(crate) tax_rate: f64,
@@ -18,7 +20,7 @@ pub(crate) struct Config {
     pub(crate) currency: String,
 }
 
-impl Default for Config {
+impl Default for ConfigImpl {
     fn default() -> Self {
         Self {
             markup_percentage: 0.0,
@@ -30,20 +32,35 @@ impl Default for Config {
     }
 }
 
+impl Config for ConfigImpl {
+    fn get_markup_percentage(&self) -> f64 {
+        self.markup_percentage
+    }
+    fn get_hourly_rate(&self) -> f64 {
+        self.hourly_rate
+    }
+    fn get_tax_rate(&self) -> f64 {
+        self.tax_rate
+    }
+    fn get_vat(&self) -> f64 {
+        self.vat
+    }
+}
+
 fn get_config_path() -> String {
     format!("{}/{}", get_store_path(), CONFIG_PATH)
 }
 
-pub(crate) fn get_config() -> Config {
+pub(crate) fn get_config() -> ConfigImpl {
     let stored_config = confy::load_path(&get_config_path());
     if stored_config.is_ok() {
         return stored_config.unwrap();
     }
-    let config = Config::default();
+    let config = ConfigImpl::default();
     store_config(&config);
     config
 }
 
-pub(crate) fn store_config(config: &Config) {
+pub(crate) fn store_config(config: &ConfigImpl) {
     confy::store_path(&get_config_path(), config).expect("Unable to store updated config");
 }

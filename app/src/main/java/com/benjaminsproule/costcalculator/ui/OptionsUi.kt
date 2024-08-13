@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.benjaminsproule.costcalculator.store.Config
+import com.benjaminsproule.costcalculator.ui.decimal.DecimalField
 import kotlinx.coroutines.launch
 
 @Composable
@@ -23,44 +24,32 @@ fun OptionsUi(
     val coroutineScope = rememberCoroutineScope()
     val config by configViewModel.config.collectAsState()
 
-    var markupPercentage by remember(config.markupPercentage) { mutableFloatStateOf(config.markupPercentage) }
-    var hourlyRate by remember(config.hourlyRate) { mutableFloatStateOf(config.hourlyRate) }
-    var taxRate by remember(config.taxRate) { mutableFloatStateOf(config.taxRate) }
-    var vat by remember(config.vat) { mutableFloatStateOf(config.vat) }
+    var markupPercentage by remember(config.markupPercentage) { mutableStateOf(config.markupPercentage.toString()) }
+    var hourlyRate by remember(config.hourlyRate) { mutableStateOf(config.hourlyRate.toString()) }
+    var taxRate by remember(config.taxRate) { mutableStateOf(config.taxRate.toString()) }
+    var vat by remember(config.vat) { mutableStateOf(config.vat.toString()) }
     var currency by remember(config.currency) { mutableStateOf(config.currency) }
 
     return Column(modifier = Modifier.padding(14.dp)) {
-        TextField(
+        DecimalField(
             label = { Text("Markup percentage") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            value = "$markupPercentage",
-            onValueChange = { markupPercentage = it.toFloatOrNull() ?: markupPercentage },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            visualTransformation = CurrencyVisualTransformation()
+            value = markupPercentage,
+            onValueChange = { markupPercentage = it },
         )
-        TextField(
+        DecimalField(
             label = { Text("Hourly rate") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            value = "$hourlyRate",
-            onValueChange = { hourlyRate = it.toFloatOrNull() ?: hourlyRate },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            visualTransformation = CurrencyVisualTransformation()
+            value = hourlyRate,
+            onValueChange = { hourlyRate = it },
         )
-        TextField(
+        DecimalField(
             label = { Text("Tax rate") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            value = "$taxRate",
-            onValueChange = { taxRate = it.toFloatOrNull() ?: taxRate },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            visualTransformation = CurrencyVisualTransformation()
+            value = taxRate,
+            onValueChange = { taxRate = it },
         )
-        TextField(
+        DecimalField(
             label = { Text("VAT") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            value = "$vat",
-            onValueChange = { vat = it.toFloatOrNull() ?: vat },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-            visualTransformation = CurrencyVisualTransformation()
+            value = vat,
+            onValueChange = { vat = it },
         )
         TextField(
             label = { Text("Currency") },
@@ -81,10 +70,10 @@ fun OptionsUi(
                 coroutineScope.launch {
                     configViewModel.storeConfig(
                         Config(
-                            markupPercentage = markupPercentage,
-                            hourlyRate = hourlyRate,
-                            taxRate = taxRate,
-                            vat = vat,
+                            markupPercentage = markupPercentage.toFloat(),
+                            hourlyRate = hourlyRate.toFloat(),
+                            taxRate = taxRate.toFloat(),
+                            vat = vat.toFloat(),
                             currency = currency
                         )
                     )

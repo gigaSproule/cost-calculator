@@ -1,23 +1,18 @@
-use crate::{
-    calculator::{ChargeAmount, SaleBreakdown},
-    store::config,
-};
-
 use super::Material;
+use super::{ChargeAmount, Config, SaleBreakdown};
 
 const PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.015;
 const EEA_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.025;
 const INTERNATIONAL_PAYMENT_PROCESSING_PERCENTAGE: f64 = 0.035;
 const PAYMENT_PROCESSING_FEE: f64 = 0.3;
 
-pub(crate) fn based_on_sale(
+pub fn based_on_sale(
+    config: &dyn Config,
     sale: f64,
     delivery_costs: f64,
     eea: bool,
     international: bool,
 ) -> SaleBreakdown {
-    let config = config::get_config();
-
     let sale_total = sale + delivery_costs;
     let additional_payment_processing_percentage = if eea {
         EEA_PAYMENT_PROCESSING_PERCENTAGE
@@ -31,10 +26,10 @@ pub(crate) fn based_on_sale(
     let additional_processing_payment =
         base_processing_payment * additional_payment_processing_percentage;
     let payment_processing_cost = base_processing_payment + additional_processing_payment;
-    let tax = sale * (config.tax_rate / 100.0);
+    let tax = sale * (config.get_tax_rate() / 100.0);
     let revenue = sale - payment_processing_cost - tax;
     let percentage_kept = (revenue / sale) * 100.0;
-    let max_working_hours = revenue / config.hourly_rate;
+    let max_working_hours = revenue / config.get_hourly_rate();
     SaleBreakdown {
         sale,
         delivery_costs,
@@ -53,18 +48,18 @@ pub(crate) fn based_on_sale(
     }
 }
 
-pub(crate) fn how_much_to_charge(
+pub fn how_much_to_charge(
+    config: &dyn Config,
     number_of_minutes: f64,
     material_costs: Vec<Material>,
     delivery_costs: f64,
     eea: bool,
     international: bool,
 ) -> ChargeAmount {
-    let config = config::get_config();
-
     let total_material_costs: f64 = material_costs.iter().map(|material| material.value).sum();
-    let base_charge =
-        ((number_of_minutes / 60.0) * config.hourly_rate) + total_material_costs + delivery_costs;
+    let base_charge = ((number_of_minutes / 60.0) * config.get_hourly_rate())
+        + total_material_costs
+        + delivery_costs;
     let additional_payment_processing_percentage = if eea {
         EEA_PAYMENT_PROCESSING_PERCENTAGE
     } else if international {
@@ -79,7 +74,7 @@ pub(crate) fn how_much_to_charge(
     let payment_processing_cost = base_processing_payment + additional_processing_payment;
     let charge = base_charge + payment_processing_cost;
 
-    let markup_percentage = (100.0 + config.markup_percentage) / 100.0;
+    let markup_percentage = (100.0 + config.get_markup_percentage()) / 100.0;
 
     let total_to_charge = (charge * markup_percentage).ceil();
     ChargeAmount {

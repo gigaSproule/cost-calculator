@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.benjaminsproule.costcalculator.store.StoredMaterial
+import com.benjaminsproule.costcalculator.ui.decimal.DecimalVisualTransformation
 import kotlinx.coroutines.launch
 
 @Composable
@@ -79,7 +80,7 @@ private fun MaterialRow(material: StoredMaterial = StoredMaterial(), onUpdateMat
                     onUpdateMaterial(rememberedMaterial)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-                visualTransformation = CurrencyVisualTransformation()
+                visualTransformation = DecimalVisualTransformation()
             )
             TextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,7 +92,7 @@ private fun MaterialRow(material: StoredMaterial = StoredMaterial(), onUpdateMat
                     onUpdateMaterial(rememberedMaterial)
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-                visualTransformation = CurrencyVisualTransformation()
+                visualTransformation = DecimalVisualTransformation()
             )
         }
     }

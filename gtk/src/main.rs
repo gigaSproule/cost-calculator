@@ -2,7 +2,6 @@
 
 use ui::load_ui;
 
-mod calculator;
 mod store;
 mod ui;
 

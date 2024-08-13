@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.benjaminsproule.costcalculator"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.benjaminsproule.costcalculator"

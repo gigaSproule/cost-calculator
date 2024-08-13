@@ -1,7 +1,7 @@
 use adw::ApplicationWindow;
 use gtk4::{glib::clone, prelude::*};
 
-use crate::store::config::{self, get_config, Config};
+use crate::store::config::{self, get_config, ConfigImpl};
 
 pub(crate) fn options(window: &ApplicationWindow) -> gtk4::Grid {
     let existing_config = get_config();
@@ -106,32 +106,40 @@ pub(crate) fn options(window: &ApplicationWindow) -> gtk4::Grid {
         .halign(gtk4::Align::End)
         .valign(gtk4::Align::Center)
         .build();
-    save.connect_clicked(
-        clone!(@strong markup_percentage_input, @strong hourly_rate_input, @strong tax_rate_input, @strong vat_input, @strong window =>
-            move |_| {
-                let config = Config {
-                    markup_percentage: markup_percentage_input.value(),
-                    hourly_rate: hourly_rate_input.value(),
-                    tax_rate: tax_rate_input.value(),
-                    vat: vat_input.value(),
-                    currency: currency_input.text().to_string(),
-                };
-                config::store_config(&config);
+    save.connect_clicked(clone!(
+        #[strong]
+        markup_percentage_input,
+        #[strong]
+        hourly_rate_input,
+        #[strong]
+        tax_rate_input,
+        #[strong]
+        vat_input,
+        #[strong]
+        window,
+        move |_| {
+            let config = ConfigImpl {
+                markup_percentage: markup_percentage_input.value(),
+                hourly_rate: hourly_rate_input.value(),
+                tax_rate: tax_rate_input.value(),
+                vat: vat_input.value(),
+                currency: currency_input.text().to_string(),
+            };
+            config::store_config(&config);
 
-                let saved_dialog = gtk4::MessageDialog::builder()
-                    .modal(true)
-                    .text("Options saved.")
-                    .buttons(gtk4::ButtonsType::Ok)
-                    .message_type(gtk4::MessageType::Info)
-                    .transient_for(&window)
-                    .build();
-                saved_dialog.connect_response(|dialog, _| {
-                    dialog.close();
-                });
-                saved_dialog.show();
-            }
-        ),
-    );
+            let saved_dialog = gtk4::MessageDialog::builder()
+                .modal(true)
+                .text("Options saved.")
+                .buttons(gtk4::ButtonsType::Ok)
+                .message_type(gtk4::MessageType::Info)
+                .transient_for(&window)
+                .build();
+            saved_dialog.connect_response(|dialog, _| {
+                dialog.close();
+            });
+            saved_dialog.show();
+        }
+    ));
     container.attach(&save, 1, 5, 1, 1);
     container
 }

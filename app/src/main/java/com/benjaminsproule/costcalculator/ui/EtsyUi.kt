@@ -2,6 +2,7 @@
 
 package com.benjaminsproule.costcalculator.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,8 @@ import com.benjaminsproule.costcalculator.calculator.ChargeAmount
 import com.benjaminsproule.costcalculator.calculator.EtsyCalculator
 import com.benjaminsproule.costcalculator.calculator.Material
 import com.benjaminsproule.costcalculator.calculator.SaleBreakdown
+import com.benjaminsproule.costcalculator.ui.decimal.DecimalField
+import com.benjaminsproule.costcalculator.ui.integer.IntegerField
 
 @Composable
 fun EtsyUi() {
@@ -50,8 +53,8 @@ fun EtsyUi() {
 
 @Composable
 fun CostOfSale(configViewModel: ConfigViewModel = viewModel(factory = ConfigViewModel.Factory)) {
-    var costOfSale by remember { mutableFloatStateOf(0.0f) }
-    var costOfDelivery by remember { mutableFloatStateOf(0.0f) }
+    var costOfSale by remember { mutableStateOf("0.00") }
+    var costOfDelivery by remember { mutableStateOf("0.00") }
     var offsiteAdsUsed by remember { mutableStateOf(false) }
     var saleBreakdown: SaleBreakdown? by remember { mutableStateOf(null) }
     val config by configViewModel.config.collectAsState()
@@ -59,19 +62,15 @@ fun CostOfSale(configViewModel: ConfigViewModel = viewModel(factory = ConfigView
     val etsyCalculator = EtsyCalculator(config)
 
     Column(modifier = Modifier.padding(14.dp)) {
-        TextField(
+        DecimalField(
             label = { Text("Cost of sale") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            value = "%.2f".format(costOfSale),
-            onValueChange = { costOfSale = it.toFloatOrNull() ?: costOfSale },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            value = costOfSale,
+            onValueChange = { costOfSale = it },
         )
-        TextField(
+        DecimalField(
             label = { Text("Cost of delivery") },
-            modifier = Modifier.fillMaxWidth(),
-            value = "%.2f".format(costOfDelivery),
-            onValueChange = { costOfDelivery = it.toFloatOrNull() ?: costOfDelivery },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            value = costOfDelivery,
+            onValueChange = { costOfDelivery = it },
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -84,14 +83,15 @@ fun CostOfSale(configViewModel: ConfigViewModel = viewModel(factory = ConfigView
         }
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(modifier = Modifier.padding(end = 16.dp), onClick = {
-                costOfSale = 0.0f
-                costOfDelivery = 0.0f
+                costOfSale = "0.00"
+                costOfDelivery = "0.00"
                 offsiteAdsUsed = false
             }) {
                 Text("Clear")
             }
             Button(onClick = {
-                saleBreakdown = etsyCalculator.basedOnSale(costOfSale, costOfDelivery, offsiteAdsUsed)
+                saleBreakdown =
+                    etsyCalculator.basedOnSale(costOfSale.toFloat(), costOfDelivery.toFloat(), offsiteAdsUsed)
             }) {
                 Text("Calculate")
             }
@@ -290,7 +290,7 @@ fun HowMuchToCharge(
 ) {
     var timeTaken by remember { mutableFloatStateOf(0.0f) }
     var materialCostsEntries: List<Material> by remember { mutableStateOf(emptyList()) }
-    var costOfDelivery by remember { mutableFloatStateOf(0.0f) }
+    var costOfDelivery by remember { mutableStateOf("0.00") }
     var offsiteAdsUsed by remember { mutableStateOf(false) }
     var chargeAmount: ChargeAmount? by remember { mutableStateOf(null) }
     val config by configViewModel.config.collectAsState()
@@ -300,7 +300,7 @@ fun HowMuchToCharge(
 
     val etsyCalculator = EtsyCalculator(config)
 
-    Column(modifier = Modifier.padding(14.dp)) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(14.dp)) {
         TextField(
             label = { Text("Time taken") },
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
@@ -325,33 +325,29 @@ fun HowMuchToCharge(
         )
         Card(
             modifier = Modifier.background(Color.Transparent).fillMaxWidth()
-                .padding(bottom = 16.dp).border(1.dp, Color.Black).verticalScroll(rememberScrollState())
+                .padding(bottom = 16.dp).border(1.dp, Color.Black)
         ) {
             Text(modifier = Modifier.padding(8.dp), text = "Cost of materials")
             materialCosts.map { material ->
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    var materialCost by remember { mutableFloatStateOf(0.0f) }
-                    TextField(
+                    var materialCost by remember { mutableStateOf("0") }
+                    IntegerField(
                         label = { Text(material.name) },
-                        modifier = Modifier.fillMaxWidth(),
-                        value = "${materialCost.toInt()}",
+                        value = materialCost,
                         onValueChange = {
-                            materialCost = it.toFloatOrNull() ?: materialCost
+                            materialCost = it
                             materialCostsEntries = materialCostsEntries.filter {
                                 it.name != material.name
-                            } + Material(material.name, materialCost * material.value)
+                            } + Material(material.name, (materialCost.toIntOrNull() ?: 0) * material.value)
                         },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     )
                 }
             }
         }
-        TextField(
+        DecimalField(
             label = { Text("Cost of delivery") },
-            modifier = Modifier.fillMaxWidth(),
-            value = "%.2f".format(costOfDelivery),
-            onValueChange = { costOfDelivery = it.toFloatOrNull() ?: costOfDelivery },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            value = costOfDelivery,
+            onValueChange = { costOfDelivery = it },
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -365,14 +361,19 @@ fun HowMuchToCharge(
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(modifier = Modifier.padding(end = 16.dp), onClick = {
                 timeTaken = 0.0f
-                costOfDelivery = 0.0f
+                costOfDelivery = "0.00"
                 offsiteAdsUsed = false
             }) {
                 Text("Clear")
             }
             Button(onClick = {
                 chargeAmount =
-                    etsyCalculator.howMuchToCharge(timeTaken, materialCostsEntries, costOfDelivery, offsiteAdsUsed)
+                    etsyCalculator.howMuchToCharge(
+                        timeTaken,
+                        materialCostsEntries,
+                        costOfDelivery.toFloat(),
+                        offsiteAdsUsed
+                    )
             }) {
                 Text("Calculate")
             }

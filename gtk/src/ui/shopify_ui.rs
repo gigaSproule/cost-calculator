@@ -2,10 +2,9 @@ use std::sync::{Arc, Mutex};
 
 use gtk4::{glib::clone, prelude::*, Align};
 
-use crate::{
-    calculator::shopify_calculator, calculator::Material, store::config::get_config,
-    store::materials::get_materials,
-};
+use calculators::{shopify_calculator, Material};
+
+use crate::{store::config::get_config, store::materials::get_materials};
 
 pub(crate) fn shopify_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
@@ -276,45 +275,112 @@ fn cost_of_sale() -> gtk4::Grid {
         .build();
     container.attach(&max_working_hours_value, 1, 18, 1, 1);
 
-    clear.connect_clicked(
-        clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong international_amex_input =>
-            move |_| {
-                cost_of_sale_input.set_value(0.0);
-                cost_of_delivery_input.set_value(0.0);
-                international_amex_input.set_active(false);
-            }
-        ),
-    );
+    clear.connect_clicked(clone!(
+        #[strong]
+        cost_of_sale_input,
+        #[strong]
+        cost_of_delivery_input,
+        #[strong]
+        international_amex_input,
+        move |_| {
+            cost_of_sale_input.set_value(0.0);
+            cost_of_delivery_input.set_value(0.0);
+            international_amex_input.set_active(false);
+        }
+    ));
 
-    calculate.connect_clicked(
-        clone!(@strong cost_of_sale_input, @strong cost_of_delivery_input, @strong international_amex_input, @strong sale_value,
-            @strong delivery_costs_value, @strong transaction_cost_value, @strong payment_processing_cost_value, @strong offsite_ads_cost_value,
-            @strong regulatory_operating_fee_value, @strong vat_paid_by_buyer_value, @strong vat_on_seller_fees_value, @strong total_fees_value,
-            @strong total_fees_with_vat_value, @strong tax_value, @strong revenue_value, @strong percentage_kept_value, @strong max_working_hours_value =>
-            move |_| {
-                let config=get_config();
-                let sale_breakdown = shopify_calculator::based_on_sale(
-                    cost_of_sale_input.value(),
-                    cost_of_delivery_input.value(),
-                    international_amex_input.is_active(),
-                );
-                sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
-                delivery_costs_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.delivery_costs));
-                transaction_cost_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.transaction_cost));
-                payment_processing_cost_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.payment_processing_cost));
-                offsite_ads_cost_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.offsite_ads_cost));
-                regulatory_operating_fee_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.regulatory_operating_fee));
-                vat_paid_by_buyer_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.vat_paid_by_buyer));
-                vat_on_seller_fees_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.vat_on_seller_fees));
-                total_fees_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.total_fees));
-                total_fees_with_vat_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.total_fees_with_vat));
-                tax_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.tax));
-                revenue_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.revenue));
-                percentage_kept_value.set_text(&format!("{:.2}%", sale_breakdown.percentage_kept));
-                max_working_hours_value.set_text(&format!("{}:{:02}", sale_breakdown.max_working_hours as i64, ((sale_breakdown.max_working_hours - ((sale_breakdown.max_working_hours as i64) as f64)) * 60.0) as i64));
-            }
-        ),
-    );
+    calculate.connect_clicked(clone!(
+        #[strong]
+        cost_of_sale_input,
+        #[strong]
+        cost_of_delivery_input,
+        #[strong]
+        international_amex_input,
+        #[strong]
+        sale_value,
+        #[strong]
+        delivery_costs_value,
+        #[strong]
+        transaction_cost_value,
+        #[strong]
+        payment_processing_cost_value,
+        #[strong]
+        offsite_ads_cost_value,
+        #[strong]
+        regulatory_operating_fee_value,
+        #[strong]
+        vat_paid_by_buyer_value,
+        #[strong]
+        vat_on_seller_fees_value,
+        #[strong]
+        total_fees_value,
+        #[strong]
+        total_fees_with_vat_value,
+        #[strong]
+        tax_value,
+        #[strong]
+        revenue_value,
+        #[strong]
+        percentage_kept_value,
+        #[strong]
+        max_working_hours_value,
+        move |_| {
+            let config = get_config();
+            let sale_breakdown = shopify_calculator::based_on_sale(
+                &config,
+                cost_of_sale_input.value(),
+                cost_of_delivery_input.value(),
+                international_amex_input.is_active(),
+            );
+            sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
+            delivery_costs_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.delivery_costs
+            ));
+            transaction_cost_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.transaction_cost
+            ));
+            payment_processing_cost_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.payment_processing_cost
+            ));
+            offsite_ads_cost_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.offsite_ads_cost
+            ));
+            regulatory_operating_fee_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.regulatory_operating_fee
+            ));
+            vat_paid_by_buyer_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.vat_paid_by_buyer
+            ));
+            vat_on_seller_fees_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.vat_on_seller_fees
+            ));
+            total_fees_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.total_fees
+            ));
+            total_fees_with_vat_value.set_text(&format!(
+                "{}{:.2}",
+                config.currency, sale_breakdown.total_fees_with_vat
+            ));
+            tax_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.tax));
+            revenue_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.revenue));
+            percentage_kept_value.set_text(&format!("{:.2}%", sale_breakdown.percentage_kept));
+            max_working_hours_value.set_text(&format!(
+                "{}:{:02}",
+                sale_breakdown.max_working_hours as i64,
+                ((sale_breakdown.max_working_hours
+                    - ((sale_breakdown.max_working_hours as i64) as f64))
+                    * 60.0) as i64
+            ));
+        }
+    ));
     container
 }
 
@@ -483,43 +549,63 @@ fn how_much_to_charge() -> gtk4::Grid {
     container.attach(&answer_label, 0, 5, 2, 1);
 
     let material_costs_entries_clear = material_costs_entries.clone();
-    clear.connect_clicked(
-        clone!(@strong minutes_input, @strong cost_of_delivery_input, @strong international_amex_input, @strong answer_label =>
-            move |_| {
-                let material_entries = material_costs_entries_clear.lock().unwrap();
-                minutes_input.set_value(0.0);
-                material_entries.iter().for_each(|(_, entry, _)| {
-                    entry.set_value(0.0);
-                });
-                cost_of_delivery_input.set_value(0.0);
-                international_amex_input.set_active(false);
-                answer_label.set_text("");
-            }
-        )
-    );
+    clear.connect_clicked(clone!(
+        #[strong]
+        minutes_input,
+        #[strong]
+        cost_of_delivery_input,
+        #[strong]
+        international_amex_input,
+        #[strong]
+        answer_label,
+        move |_| {
+            let material_entries = material_costs_entries_clear.lock().unwrap();
+            minutes_input.set_value(0.0);
+            material_entries.iter().for_each(|(_, entry, _)| {
+                entry.set_value(0.0);
+            });
+            cost_of_delivery_input.set_value(0.0);
+            international_amex_input.set_active(false);
+            answer_label.set_text("");
+        }
+    ));
 
     let material_costs_entries_calculate = material_costs_entries.clone();
-    calculate.connect_clicked(
-        clone!(@strong minutes_input, @strong cost_of_delivery_input, @strong international_amex_input, @strong answer_label =>
-            move |_| {
-                let config = get_config();
-                let material_entries = material_costs_entries_calculate.lock().unwrap();
-                let materials: Vec<Material> = material_entries.iter()
-                    .filter(|(_, entry, _)| {
-                        entry.value() > 0.0
-                    })
-                    .map(|(label, spin_button, value)| {
-                        Material { name: label.text().to_string(), value: spin_button.value() * value }
-                    }).collect();
-                let charge_amount = shopify_calculator::how_much_to_charge(
-                    minutes_input.value(),
-                    materials,
-                    cost_of_delivery_input.value(),
-                    international_amex_input.is_active(),
-                );
-                answer_label.set_text(&format!("Charge: {}{:.2} (with VAT {}{:.2})", config.currency, charge_amount.total_to_charge, config.currency, charge_amount.with_vat));
-            }
-        ),
-    );
+    calculate.connect_clicked(clone!(
+        #[strong]
+        minutes_input,
+        #[strong]
+        cost_of_delivery_input,
+        #[strong]
+        international_amex_input,
+        #[strong]
+        answer_label,
+        move |_| {
+            let config = get_config();
+            let material_entries = material_costs_entries_calculate.lock().unwrap();
+            let materials: Vec<Material> = material_entries
+                .iter()
+                .filter(|(_, entry, _)| entry.value() > 0.0)
+                .map(|(label, spin_button, value)| Material {
+                    name: label.text().to_string(),
+                    value: spin_button.value() * value,
+                })
+                .collect();
+            let charge_amount = shopify_calculator::how_much_to_charge(
+                &config,
+                minutes_input.value(),
+                materials,
+                cost_of_delivery_input.value(),
+                international_amex_input.is_active(),
+            );
+            answer_label.set_text(&format!(
+                "Charge: {}{:.2} (with VAT {}{:.2})",
+                config.currency,
+                charge_amount.total_to_charge,
+                config.currency,
+                charge_amount.with_vat
+            ));
+        }
+    ));
     container
 }
