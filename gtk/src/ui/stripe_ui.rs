@@ -1,11 +1,10 @@
+use gtk4::{glib::clone, prelude::*, Align};
 use std::sync::{Arc, Mutex};
 
-use gtk4::{glib::clone, prelude::*, Align};
-
-use calculators::stripe_calculator;
-use calculators::Material;
-
-use crate::{store::config::get_config, store::materials::get_materials};
+use crate::store::config::get_config;
+use crate::store::materials::get_materials;
+use calculators::stripe_calculator::{StripeCalculator, StripeCharge, StripeLocation, StripeSale};
+use calculators::{Calculator, Material};
 
 pub(crate) fn stripe_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
@@ -331,12 +330,21 @@ fn cost_of_sale() -> gtk4::Grid {
         max_working_hours_value,
         move |_| {
             let config = get_config();
-            let sale_breakdown = stripe_calculator::based_on_sale(
+            let stripe_calculator = StripeCalculator {};
+            let sale_breakdown = stripe_calculator.based_on_sale(
                 &config,
-                cost_of_sale_input.value(),
-                cost_of_delivery_input.value(),
-                location_input.active_id().unwrap() == "eu",
-                location_input.active_id().unwrap() == "lnternational",
+                StripeSale {
+                    cost: cost_of_sale_input.value(),
+                    delivery_costs: cost_of_delivery_input.value(),
+                    location: match location_input.active_id() {
+                        Some(str) => match str.as_str() {
+                            "eu" => StripeLocation::EU,
+                            "international" => StripeLocation::International,
+                            _ => StripeLocation::Local,
+                        },
+                        _ => StripeLocation::Local,
+                    },
+                },
             );
             sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
             delivery_costs_value.set_text(&format!(
@@ -601,13 +609,22 @@ fn how_much_to_charge() -> gtk4::Grid {
                     value: spin_button.value() * value,
                 })
                 .collect();
-            let charge_amount = stripe_calculator::how_much_to_charge(
+            let stripe_calculator = StripeCalculator {};
+            let charge_amount = stripe_calculator.how_much_to_charge(
                 &config,
-                minutes_input.value(),
-                materials,
-                cost_of_delivery_input.value(),
-                location_input.active_id().unwrap() == "eu",
-                location_input.active_id().unwrap() == "international",
+                StripeCharge {
+                    number_of_minutes: minutes_input.value(),
+                    material_costs: materials,
+                    delivery_costs: cost_of_delivery_input.value(),
+                    location: match location_input.active_id() {
+                        Some(str) => match str.as_str() {
+                            "eu" => StripeLocation::EU,
+                            "international" => StripeLocation::International,
+                            _ => StripeLocation::Local,
+                        },
+                        _ => StripeLocation::Local,
+                    },
+                },
             );
             answer_label.set_text(&format!(
                 "Charge: {}{:.2} (with VAT {}{:.2})",

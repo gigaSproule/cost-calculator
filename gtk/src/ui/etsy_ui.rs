@@ -2,9 +2,9 @@ use std::sync::{Arc, Mutex};
 
 use gtk4::{glib::clone, prelude::*, Align};
 
-use calculators::{etsy_calculator, Material};
-
 use crate::{store::config::get_config, store::materials::get_materials};
+use calculators::etsy_calculator::{EtsyCalculator, EtsyCharge, EtsySale};
+use calculators::{Calculator, Material};
 
 pub(crate) fn etsy_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
@@ -326,11 +326,14 @@ fn cost_of_sale() -> gtk4::Grid {
         max_working_hours_value,
         move |_| {
             let config = get_config();
-            let sale_breakdown = etsy_calculator::based_on_sale(
+            let etsy_calculator = EtsyCalculator {};
+            let sale_breakdown = etsy_calculator.based_on_sale(
                 &config,
-                cost_of_sale_input.value(),
-                cost_of_delivery_input.value(),
-                offsite_ads_used_input.is_active(),
+                EtsySale {
+                    cost: cost_of_sale_input.value(),
+                    delivery_costs: cost_of_delivery_input.value(),
+                    offsite_ads: offsite_ads_used_input.is_active(),
+                },
             );
             sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
             delivery_costs_value.set_text(&format!(
@@ -586,12 +589,15 @@ fn how_much_to_charge() -> gtk4::Grid {
                     value: spin_button.value() * value,
                 })
                 .collect();
-            let charge_amount = etsy_calculator::how_much_to_charge(
+            let etsy_calculator = EtsyCalculator {};
+            let charge_amount = etsy_calculator.how_much_to_charge(
                 &config,
-                minutes_input.value(),
-                materials,
-                cost_of_delivery_input.value(),
-                offsite_ads_used_input.is_active(),
+                EtsyCharge {
+                    number_of_minutes: minutes_input.value(),
+                    material_costs: materials,
+                    delivery_costs: cost_of_delivery_input.value(),
+                    offsite_ads: offsite_ads_used_input.is_active(),
+                },
             );
 
             answer_label.set_text(&format!(

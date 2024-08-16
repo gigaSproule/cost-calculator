@@ -31,9 +31,20 @@ pub struct Material {
     pub value: f64,
 }
 
-trait Calculator {
-    fn based_on_sale(&self) -> SaleBreakdown;
-    fn how_much_to_charge(&self) -> ChargeAmount;
+pub trait Calculator<S, C> {
+    fn based_on_sale(&self, config: &dyn Config, sale: S) -> SaleBreakdown;
+    fn how_much_to_charge(&self, config: &dyn Config, charge: C) -> ChargeAmount;
+}
+
+pub trait Sale {
+    fn get_cost(&self) -> f64;
+    fn get_delivery_costs(&self) -> f64;
+}
+
+pub trait Charge {
+    fn get_number_of_minutes(&self) -> f64;
+    fn get_material_costs(&self) -> &Vec<Material>;
+    fn get_delivery_costs(&self) -> f64;
 }
 
 pub trait Config {

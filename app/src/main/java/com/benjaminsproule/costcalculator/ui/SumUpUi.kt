@@ -17,7 +17,7 @@ import com.benjaminsproule.costcalculator.calculator.*
 import com.benjaminsproule.costcalculator.ui.decimal.DecimalField
 
 @Composable
-fun EtsyUi() {
+fun SumUpUi() {
     var state by remember { mutableStateOf(0) }
 
     Column {
@@ -44,12 +44,12 @@ fun EtsyUi() {
 @Composable
 private fun CostOfSale(configViewModel: ConfigViewModel = viewModel(factory = ConfigViewModel.Factory)) {
     var costOfSale by remember { mutableStateOf("0.00") }
-    var costOfDelivery by remember { mutableStateOf("0.00") }
-    var offsiteAdsUsed by remember { mutableStateOf(false) }
+    var paymentOption by remember { mutableStateOf(PaymentOption.CardReader) }
+    var subscriptionOption by remember { mutableStateOf(SubscriptionOption.NoContract) }
     var saleBreakdown: SaleBreakdown? by remember { mutableStateOf(null) }
     val config by configViewModel.config.collectAsState()
 
-    val etsyCalculator = EtsyCalculator(config)
+    val sumUpCalculator = SumUpCalculator(config)
 
     Column(modifier = Modifier.padding(14.dp)) {
         DecimalField(
@@ -57,35 +57,31 @@ private fun CostOfSale(configViewModel: ConfigViewModel = viewModel(factory = Co
             value = costOfSale,
             onValueChange = { costOfSale = it },
         )
-        DecimalField(
-            label = { Text("Cost of delivery") },
-            value = costOfDelivery,
-            onValueChange = { costOfDelivery = it },
-        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Offsite ads used?")
-            Checkbox(
-                checked = offsiteAdsUsed,
-                onCheckedChange = { offsiteAdsUsed = it },
-            )
+            EnumField("Payment option", paymentOption) { paymentOption = it }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            EnumField("Subscription option", subscriptionOption) { subscriptionOption = it }
         }
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(modifier = Modifier.padding(end = 16.dp), onClick = {
                 costOfSale = "0.00"
-                costOfDelivery = "0.00"
-                offsiteAdsUsed = false
+                paymentOption = PaymentOption.CardReader
+                subscriptionOption = SubscriptionOption.NoContract
             }) {
                 Text("Clear")
             }
             Button(onClick = {
                 saleBreakdown =
-                    etsyCalculator.basedOnSale(
-                        EtsySale(
+                    sumUpCalculator.basedOnSale(
+                        SumUpSale(
                             cost = costOfSale.toFloat(),
-                            deliveryCosts = costOfDelivery.toFloat(),
-                            offsiteAds = offsiteAdsUsed
+                            paymentOption = paymentOption,
+                            subscriptionOption = subscriptionOption
                         )
                     )
             }) {
@@ -103,15 +99,15 @@ private fun HowMuchToCharge(
 ) {
     var timeTaken by remember { mutableFloatStateOf(0.0f) }
     var materialCostsEntries: List<Material> by remember { mutableStateOf(emptyList()) }
-    var costOfDelivery by remember { mutableStateOf("0.00") }
-    var offsiteAdsUsed by remember { mutableStateOf(false) }
+    var paymentOption by remember { mutableStateOf(PaymentOption.CardReader) }
+    var subscriptionOption by remember { mutableStateOf(SubscriptionOption.NoContract) }
     var chargeAmount: ChargeAmount? by remember { mutableStateOf(null) }
     val config by configViewModel.config.collectAsState()
     val materials by materialsViewModel.materials.collectAsState()
 
     val materialCosts by remember(materials) { mutableStateOf(materials) }
 
-    val etsyCalculator = EtsyCalculator(config)
+    val sumUpCalculator = SumUpCalculator(config)
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(14.dp)) {
         TextField(
@@ -141,36 +137,34 @@ private fun HowMuchToCharge(
                 it.name != material.name
             } + material
         }
-        DecimalField(
-            label = { Text("Cost of delivery") },
-            value = costOfDelivery,
-            onValueChange = { costOfDelivery = it },
-        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Offsite ads used?")
-            Checkbox(
-                checked = offsiteAdsUsed,
-                onCheckedChange = { offsiteAdsUsed = it },
-            )
+            EnumField("Payment option", paymentOption) { paymentOption = it }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            EnumField("Subscription option", subscriptionOption) {
+                subscriptionOption = it
+            }
         }
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(modifier = Modifier.padding(end = 16.dp), onClick = {
                 timeTaken = 0.0f
-                costOfDelivery = "0.00"
-                offsiteAdsUsed = false
+                paymentOption = PaymentOption.CardReader
+                subscriptionOption = SubscriptionOption.NoContract
             }) {
                 Text("Clear")
             }
             Button(onClick = {
                 chargeAmount =
-                    etsyCalculator.howMuchToCharge(
-                        EtsyCharge(
+                    sumUpCalculator.howMuchToCharge(
+                        SumUpCharge(
                             numberOfMinutes = timeTaken,
                             materialCosts = materialCostsEntries,
-                            deliveryCosts = costOfDelivery.toFloat(),
-                            offsiteAds = offsiteAdsUsed
+                            paymentOption = paymentOption,
+                            subscriptionOption = subscriptionOption
                         )
                     )
             }) {

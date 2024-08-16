@@ -2,8 +2,10 @@ use std::sync::{Arc, Mutex};
 
 use gtk4::{glib::clone, prelude::*, Align};
 
-use calculators::sumup_calculator::{self, PaymentOption, SubscriptionOption};
-use calculators::Material;
+use calculators::sumup_calculator::{
+    PaymentOption, SubscriptionOption, SumUpCalculator, SumUpCharge, SumUpSale,
+};
+use calculators::{Calculator, Material};
 
 use crate::store::config::get_config;
 use crate::store::materials::get_materials;
@@ -107,7 +109,7 @@ fn cost_of_sale() -> gtk4::Grid {
     let subscription_option_input = gtk4::ComboBoxText::builder()
         .name("subscription_option")
         .build();
-    subscription_option_input.append(Some("no_contract"), "No Contract");
+    subscription_option_input.append(Some("no_contract"), "No contract");
     subscription_option_input.append(Some("sumup_one"), "SumUp One");
     subscription_option_input.set_active_id(Some("no_contract"));
     container.attach(&subscription_option_input, 1, 2, 1, 1);
@@ -352,11 +354,18 @@ fn cost_of_sale() -> gtk4::Grid {
         max_working_hours_value,
         move |_| {
             let config = get_config();
-            let sale_breakdown = sumup_calculator::based_on_sale(
+            let sumup_calculator = SumUpCalculator {};
+            let sale_breakdown = sumup_calculator.based_on_sale(
                 &config,
-                cost_of_sale_input.value(),
-                to_payment_option(payment_option_input.active_id().unwrap().as_str()),
-                to_subscription_option(subscription_option_input.active_id().unwrap().as_str()),
+                SumUpSale {
+                    cost: cost_of_sale_input.value(),
+                    payment_option: to_payment_option(
+                        payment_option_input.active_id().unwrap().as_str(),
+                    ),
+                    subscription_option: to_subscription_option(
+                        subscription_option_input.active_id().unwrap().as_str(),
+                    ),
+                },
             );
             sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
             delivery_costs_value.set_text(&format!(
@@ -546,7 +555,7 @@ fn how_much_to_charge() -> gtk4::Grid {
     let subscription_option_input = gtk4::ComboBoxText::builder()
         .name("subscription_option")
         .build();
-    subscription_option_input.append(Some("no_contract"), "No Contract");
+    subscription_option_input.append(Some("no_contract"), "No contract");
     subscription_option_input.append(Some("sumup_one"), "SumUp One");
     subscription_option_input.set_active_id(Some("no_contract"));
     container.attach(&subscription_option_input, 1, 3, 1, 1);
@@ -618,12 +627,19 @@ fn how_much_to_charge() -> gtk4::Grid {
                     value: spin_button.value() * value,
                 })
                 .collect();
-            let charge_amount = sumup_calculator::how_much_to_charge(
+            let sumup_calculator = SumUpCalculator {};
+            let charge_amount = sumup_calculator.how_much_to_charge(
                 &config,
-                minutes_input.value(),
-                materials,
-                to_payment_option(payment_option_input.active_id().unwrap().as_str()),
-                to_subscription_option(subscription_option_input.active_id().unwrap().as_str()),
+                SumUpCharge {
+                    number_of_minutes: minutes_input.value(),
+                    material_costs: materials,
+                    payment_option: to_payment_option(
+                        payment_option_input.active_id().unwrap().as_str(),
+                    ),
+                    subscription_option: to_subscription_option(
+                        subscription_option_input.active_id().unwrap().as_str(),
+                    ),
+                },
             );
             answer_label.set_text(&format!(
                 "Charge: {}{:.2} (with VAT {}{:.2})",

@@ -1,10 +1,9 @@
 use std::sync::{Arc, Mutex};
 
-use gtk4::{glib::clone, prelude::*, Align};
-
-use calculators::{paypal_calculator, Material};
-
 use crate::{store::config::get_config, store::materials::get_materials};
+use calculators::paypal_calculator::{PaypalCalculator, PaypalCharge, PaypalLocation, PaypalSale};
+use calculators::{Calculator, Material};
+use gtk4::{glib::clone, prelude::*, Align};
 
 pub(crate) fn paypal_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
@@ -330,12 +329,21 @@ fn cost_of_sale() -> gtk4::Grid {
         max_working_hours_value,
         move |_| {
             let config = get_config();
-            let sale_breakdown = paypal_calculator::based_on_sale(
+            let paypal_calculator = PaypalCalculator {};
+            let sale_breakdown = paypal_calculator.based_on_sale(
                 &config,
-                cost_of_sale_input.value(),
-                cost_of_delivery_input.value(),
-                location_input.active_id().unwrap() == "eea",
-                location_input.active_id().unwrap() == "lnternational",
+                PaypalSale {
+                    cost: cost_of_sale_input.value(),
+                    delivery_costs: cost_of_delivery_input.value(),
+                    location: match location_input.active_id() {
+                        Some(str) => match str.as_str() {
+                            "eea" => PaypalLocation::EEA,
+                            "international" => PaypalLocation::International,
+                            _ => PaypalLocation::Local,
+                        },
+                        _ => PaypalLocation::Local,
+                    },
+                },
             );
             sale_value.set_text(&format!("{}{:.2}", config.currency, sale_breakdown.sale));
             delivery_costs_value.set_text(&format!(
@@ -600,13 +608,22 @@ fn how_much_to_charge() -> gtk4::Grid {
                     value: spin_button.value() * value,
                 })
                 .collect();
-            let charge_amount = paypal_calculator::how_much_to_charge(
+            let paypal_calculator = PaypalCalculator {};
+            let charge_amount = paypal_calculator.how_much_to_charge(
                 &config,
-                minutes_input.value(),
-                materials,
-                cost_of_delivery_input.value(),
-                location_input.active_id().unwrap() == "eea",
-                location_input.active_id().unwrap() == "international",
+                PaypalCharge {
+                    number_of_minutes: minutes_input.value(),
+                    material_costs: materials,
+                    delivery_costs: cost_of_delivery_input.value(),
+                    location: match location_input.active_id() {
+                        Some(str) => match str.as_str() {
+                            "eea" => PaypalLocation::EEA,
+                            "international" => PaypalLocation::International,
+                            _ => PaypalLocation::Local,
+                        },
+                        _ => PaypalLocation::Local,
+                    },
+                },
             );
             answer_label.set_text(&format!(
                 "Charge: {}{:.2} (with VAT {}{:.2})",

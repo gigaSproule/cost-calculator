@@ -7,14 +7,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import com.benjaminsproule.costcalculator.calculator.Config as CalculatorConfig
 
 data class Config(
-    val markupPercentage: Float = ConfigDefaults.MARKUP_PERCENTAGE,
-    val hourlyRate: Float = ConfigDefaults.MINIMUM_WAGE,
-    val taxRate: Float = ConfigDefaults.BASIC_RATE,
-    val vat: Float = ConfigDefaults.VAT,
+    override val markupPercentage: Float = ConfigDefaults.MARKUP_PERCENTAGE,
+    override val hourlyRate: Float = ConfigDefaults.MINIMUM_WAGE,
+    override val taxRate: Float = ConfigDefaults.BASIC_RATE,
+    override val vat: Float = ConfigDefaults.VAT,
     val currency: String = ConfigDefaults.CURRENCY,
-)
+) : CalculatorConfig()
 
 private object ConfigDefaults {
     val MARKUP_PERCENTAGE = 0.0f

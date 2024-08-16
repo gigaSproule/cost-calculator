@@ -30,12 +30,25 @@ data class Material(
     val value: Float,
 )
 
-interface Calculator {
-    fun basedOnSale(sale: Float, deliveryCosts: Float, offsiteAds: Boolean): SaleBreakdown
-    fun howMuchToCharge(
-        numberOfMinutes: Float,
-        materialCosts: List<Material>,
-        deliveryCosts: Float,
-        offsiteAds: Boolean
-    ): ChargeAmount
+interface Calculator<S : Sale, C : Charge> {
+    fun basedOnSale(sale: S): SaleBreakdown
+    fun howMuchToCharge(charge: C): ChargeAmount
+}
+
+abstract class Sale {
+    abstract val cost: Float
+    abstract val deliveryCosts: Float
+}
+
+abstract class Charge {
+    abstract val numberOfMinutes: Float
+    abstract val materialCosts: List<Material>
+    abstract val deliveryCosts: Float
+}
+
+abstract class Config {
+    abstract val markupPercentage: Float
+    abstract val hourlyRate: Float
+    abstract val taxRate: Float
+    abstract val vat: Float
 }

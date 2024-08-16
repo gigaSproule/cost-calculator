@@ -17,7 +17,7 @@ import com.benjaminsproule.costcalculator.calculator.*
 import com.benjaminsproule.costcalculator.ui.decimal.DecimalField
 
 @Composable
-fun EtsyUi() {
+fun StripeUi() {
     var state by remember { mutableStateOf(0) }
 
     Column {
@@ -45,11 +45,11 @@ fun EtsyUi() {
 private fun CostOfSale(configViewModel: ConfigViewModel = viewModel(factory = ConfigViewModel.Factory)) {
     var costOfSale by remember { mutableStateOf("0.00") }
     var costOfDelivery by remember { mutableStateOf("0.00") }
-    var offsiteAdsUsed by remember { mutableStateOf(false) }
+    var location by remember { mutableStateOf(StripeLocation.Local) }
     var saleBreakdown: SaleBreakdown? by remember { mutableStateOf(null) }
     val config by configViewModel.config.collectAsState()
 
-    val etsyCalculator = EtsyCalculator(config)
+    val stripeCalculator = StripeCalculator(config)
 
     Column(modifier = Modifier.padding(14.dp)) {
         DecimalField(
@@ -65,27 +65,23 @@ private fun CostOfSale(configViewModel: ConfigViewModel = viewModel(factory = Co
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Offsite ads used?")
-            Checkbox(
-                checked = offsiteAdsUsed,
-                onCheckedChange = { offsiteAdsUsed = it },
-            )
+            EnumField("Location of sale", location) { location = it }
         }
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(modifier = Modifier.padding(end = 16.dp), onClick = {
                 costOfSale = "0.00"
                 costOfDelivery = "0.00"
-                offsiteAdsUsed = false
+                location = StripeLocation.Local
             }) {
                 Text("Clear")
             }
             Button(onClick = {
                 saleBreakdown =
-                    etsyCalculator.basedOnSale(
-                        EtsySale(
+                    stripeCalculator.basedOnSale(
+                        StripeSale(
                             cost = costOfSale.toFloat(),
                             deliveryCosts = costOfDelivery.toFloat(),
-                            offsiteAds = offsiteAdsUsed
+                            location = location
                         )
                     )
             }) {
@@ -104,14 +100,14 @@ private fun HowMuchToCharge(
     var timeTaken by remember { mutableFloatStateOf(0.0f) }
     var materialCostsEntries: List<Material> by remember { mutableStateOf(emptyList()) }
     var costOfDelivery by remember { mutableStateOf("0.00") }
-    var offsiteAdsUsed by remember { mutableStateOf(false) }
+    var location by remember { mutableStateOf(StripeLocation.Local) }
     var chargeAmount: ChargeAmount? by remember { mutableStateOf(null) }
     val config by configViewModel.config.collectAsState()
     val materials by materialsViewModel.materials.collectAsState()
 
     val materialCosts by remember(materials) { mutableStateOf(materials) }
 
-    val etsyCalculator = EtsyCalculator(config)
+    val stripeCalculator = StripeCalculator(config)
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(14.dp)) {
         TextField(
@@ -149,28 +145,24 @@ private fun HowMuchToCharge(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Offsite ads used?")
-            Checkbox(
-                checked = offsiteAdsUsed,
-                onCheckedChange = { offsiteAdsUsed = it },
-            )
+            EnumField("Location of sale", location) { location = it }
         }
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(modifier = Modifier.padding(end = 16.dp), onClick = {
                 timeTaken = 0.0f
                 costOfDelivery = "0.00"
-                offsiteAdsUsed = false
+                location = StripeLocation.Local
             }) {
                 Text("Clear")
             }
             Button(onClick = {
                 chargeAmount =
-                    etsyCalculator.howMuchToCharge(
-                        EtsyCharge(
+                    stripeCalculator.howMuchToCharge(
+                        StripeCharge(
                             numberOfMinutes = timeTaken,
                             materialCosts = materialCostsEntries,
                             deliveryCosts = costOfDelivery.toFloat(),
-                            offsiteAds = offsiteAdsUsed
+                            location = location
                         )
                     )
             }) {

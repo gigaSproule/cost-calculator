@@ -15,15 +15,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.benjaminsproule.costcalculator.ui.ConfigViewModel
-import com.benjaminsproule.costcalculator.ui.EtsyUi
-import com.benjaminsproule.costcalculator.ui.MaterialsUi
-import com.benjaminsproule.costcalculator.ui.OptionsUi
+import com.benjaminsproule.costcalculator.ui.*
 import com.benjaminsproule.costcalculator.ui.theme.CostCalculatorTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -125,10 +121,10 @@ fun Content() {
             ) {
                 NavHost(navController = navController, startDestination = Etsy) {
                     composable<Etsy> { EtsyUi() }
-                    composable<Paypal> { Greeting("Paypal") }
-                    composable<Shopify> { Greeting("Shopify") }
-                    composable<Stripe> { Greeting("Stripe") }
-                    composable<SumUp> { Greeting("SumUp") }
+                    composable<Paypal> { PaypalUi() }
+                    composable<Shopify> { ShopifyUi() }
+                    composable<Stripe> { StripeUi() }
+                    composable<SumUp> { SumUpUi() }
                     composable<Materials> { MaterialsUi() }
                     composable<Options> { OptionsUi() }
                 }
