@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId = "com.benjaminsproule.costcalculator"
         minSdk = 29
-        targetSdk = 34
-        versionCode = 2
-        versionName = "0.0.1"
+        targetSdk = 35
+        versionCode = 6
+        versionName = "0.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -24,8 +24,14 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
     compileOptions {
