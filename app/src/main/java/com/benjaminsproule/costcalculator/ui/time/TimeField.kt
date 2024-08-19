@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlin.math.ceil
 
 @Composable
 fun TimeField(value: String, onValueChange: (String) -> Unit, label: @Composable (() -> Unit)? = null) {
@@ -22,14 +23,14 @@ fun TimeField(value: String, onValueChange: (String) -> Unit, label: @Composable
                 val minutes = if (chunks.size > 1) {
                     (chunks[0].toInt() * 60) + chunks[1].toInt()
                 } else if (chunks.size == 1) {
-                    chunks[0].toInt()
+                    chunks[0].toIntOrNull() ?: 0
                 } else {
                     0
                 }
                 onValueChange(
                     "%02d:%02d".format(
                         *((minutes / 60.0).let { hours ->
-                            arrayOf(hours.toInt(), ((hours - hours.toInt()) * 60).toInt())
+                            arrayOf(hours.toInt(), ceil((hours - hours.toInt()) * 60.0).toInt())
                         })
                     )
                 )

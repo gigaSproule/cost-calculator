@@ -1,5 +1,6 @@
 package com.benjaminsproule.costcalculator.calculator
 
+import android.util.Log
 import com.benjaminsproule.costcalculator.store.Config
 import kotlin.math.ceil
 import kotlin.math.round

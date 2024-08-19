@@ -4,17 +4,16 @@ package com.benjaminsproule.costcalculator.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.benjaminsproule.costcalculator.calculator.*
 import com.benjaminsproule.costcalculator.ui.decimal.DecimalField
+import com.benjaminsproule.costcalculator.ui.time.TimeField
 
 @Composable
 fun StripeUi() {
@@ -30,7 +29,7 @@ fun StripeUi() {
             Tab(
                 selected = state == 1,
                 onClick = { state = 1 },
-                text = { Text(text = "How to much to charge") }
+                text = { Text(text = "How much to charge") }
             )
         }
         if (state == 0) {
@@ -97,7 +96,7 @@ private fun HowMuchToCharge(
     configViewModel: ConfigViewModel = viewModel(factory = ConfigViewModel.Factory),
     materialsViewModel: MaterialsViewModel = viewModel(factory = MaterialsViewModel.Factory)
 ) {
-    var timeTaken by remember { mutableFloatStateOf(0.0f) }
+    var timeTaken by remember { mutableStateOf("00:00") }
     var materialCostsEntries: List<Material> by remember { mutableStateOf(emptyList()) }
     var costOfDelivery by remember { mutableStateOf("0.00") }
     var location by remember { mutableStateOf(StripeLocation.Local) }
@@ -110,28 +109,14 @@ private fun HowMuchToCharge(
     val stripeCalculator = StripeCalculator(config)
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState()).padding(14.dp)) {
-        TextField(
-            label = { Text("Time taken") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            value = "%02d:%02d".format(
-                *((timeTaken / 60.0).let { hours ->
-                    arrayOf(hours.toInt(), ((hours - hours.toInt()) * 60).toInt())
-                })
-            ),
-            onValueChange = {
-                val split = it.split(":")
-                timeTaken = split.let {
-                    return@let if (it.size != 2) {
-                        0.0f
-                    } else {
-                        (it.get(0).replace(" ", "").toInt() * 60.0f) + it.get(1).replace(" ", "").toInt()
-                    }
-                }
+        TimeField(
+            label = {
+                Text("Time taken")
             },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number
-            ),
-        )
+            value = timeTaken,
+            onValueChange = { value ->
+                timeTaken = value
+            })
         CostOfMaterials(materialCosts) { material ->
             materialCostsEntries = materialCostsEntries.filter {
                 it.name != material.name
@@ -149,17 +134,18 @@ private fun HowMuchToCharge(
         }
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
             Button(modifier = Modifier.padding(end = 16.dp), onClick = {
-                timeTaken = 0.0f
+                timeTaken = "00:00"
                 costOfDelivery = "0.00"
                 location = StripeLocation.Local
             }) {
                 Text("Clear")
             }
             Button(onClick = {
+                val split = timeTaken.split(":")
                 chargeAmount =
                     stripeCalculator.howMuchToCharge(
                         StripeCharge(
-                            numberOfMinutes = timeTaken,
+                            numberOfMinutes = ((split[0].toInt() * 60) + split[1].toInt()).toFloat(),
                             materialCosts = materialCostsEntries,
                             deliveryCosts = costOfDelivery.toFloat(),
                             location = location

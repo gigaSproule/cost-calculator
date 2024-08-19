@@ -23,7 +23,7 @@ pub(crate) fn etsy_options() -> gtk4::Box {
     stack.add_titled(
         &how_much_to_charge,
         Option::<&str>::None,
-        "How to much to charge",
+        "How much to charge",
     );
 
     container.append(&stack_switcher);

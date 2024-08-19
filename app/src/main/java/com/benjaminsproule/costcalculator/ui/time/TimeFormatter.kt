@@ -9,8 +9,8 @@ class TimeFormatter(
     private val timeSeparator = ':'
 
     fun cleanup(input: String): String {
-        if (input.matches("\\D".toRegex())) return ""
-        if (input.matches("0+".toRegex())) return "0"
+//        if (input.matches("\\D".toRegex())) return ""
+//        if (input.matches("0+".toRegex())) return "0"
 
         val sb = StringBuilder()
 
