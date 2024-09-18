@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Cost Calculator"
 include(":app")
+include(":server")
