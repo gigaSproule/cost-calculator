@@ -10,7 +10,7 @@ lifecycle-runtime-ktx = "2.8.4"
 lifecycle-viewmodel-compose = "2.8.4"
 navigation = "2.8.0-beta07"
 androidGradlePlugin = "8.6.0-alpha07"
-kotlin = "2.0.10"
+kotlin = "2.0.20"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -33,3 +33,5 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
