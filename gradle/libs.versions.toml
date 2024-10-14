@@ -10,7 +10,7 @@ ktx = "1.13.1"
 lifecycle-runtime-ktx = "2.8.6"
 lifecycle-viewmodel-compose = "2.8.6"
 navigation = "2.8.2"
-androidGradlePlugin = "8.7.0"
+androidGradlePlugin = "8.7.1"
 kotlin = "2.0.21"
 
 [libraries]
