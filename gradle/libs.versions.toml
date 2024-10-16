@@ -1,15 +1,15 @@
 [versions]
-activity-compose = "1.9.2"
+activity-compose = "1.9.3"
 androidx-espressoCore = "3.6.1"
 androidx-junit = "1.2.1"
-composeBom = "2024.09.03"
+composeBom = "2024.10.00"
 dataStoreVersion = "1.1.1"
 junit = "4.13.2"
 kotlinxSerializationJson = "1.7.3"
 ktx = "1.13.1"
 lifecycle-runtime-ktx = "2.8.6"
 lifecycle-viewmodel-compose = "2.8.6"
-navigation = "2.8.2"
+navigation = "2.8.3"
 androidGradlePlugin = "8.7.1"
 kotlin = "2.0.21"
 
