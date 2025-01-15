@@ -1,9 +1,9 @@
 [versions]
-activity-compose = "1.9.3"
+activity-compose = "1.10.0"
 androidx-espressoCore = "3.6.1"
 androidx-junit = "1.2.1"
 composeBom = "2025.01.00"
-dataStoreVersion = "1.1.1"
+dataStoreVersion = "1.1.2"
 junit = "4.13.2"
 kotlinxSerializationJson = "1.8.0"
 ktx = "1.15.0"
