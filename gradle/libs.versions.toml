@@ -2,7 +2,7 @@
 activity-compose = "1.9.3"
 androidx-espressoCore = "3.6.1"
 androidx-junit = "1.2.1"
-composeBom = "2024.12.01"
+composeBom = "2025.01.00"
 dataStoreVersion = "1.1.1"
 junit = "4.13.2"
 kotlinxSerializationJson = "1.8.0"
