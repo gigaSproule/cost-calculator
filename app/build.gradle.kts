@@ -7,13 +7,13 @@ plugins {
 
 android {
     namespace = "com.benjaminsproule.costcalculator"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.benjaminsproule.costcalculator"
         minSdk = 29
-        targetSdk = 35
-        versionCode = 7
+        targetSdk = 36
+        versionCode = 8
         versionName = "0.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -52,6 +52,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildToolsVersion = "36.0.0"
 }
 
 dependencies {
