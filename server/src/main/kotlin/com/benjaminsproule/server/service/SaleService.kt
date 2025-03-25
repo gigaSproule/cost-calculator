@@ -7,39 +7,39 @@ import com.benjaminsproule.server.model.SaleStatus
 import com.benjaminsproule.server.model.SaleWithId
 
 class SaleService(private val dao: SaleDao) : Service<Sale, SaleWithId> {
-    override fun create(sale: Sale): SaleWithId {
+    override suspend fun save(sale: Sale): SaleWithId {
         return dao.save(sale)
     }
 
-    override fun update(sale: SaleWithId): SaleWithId {
+    override suspend fun update(sale: SaleWithId): SaleWithId {
         return dao.update(sale)
     }
 
-    override fun findAll(): List<SaleWithId> {
+    override suspend fun findAll(): List<SaleWithId> {
         return dao.findAll()
     }
 
-    override fun findById(id: String): SaleWithId? {
+    override suspend fun findById(id: String): SaleWithId? {
         return dao.findById(id)
     }
 
-    override fun delete(id: String) {
+    override suspend fun delete(id: String) {
         dao.delete(id)
     }
 
-    fun addSaleItem(id: String, saleItem: SaleItem) {
+    suspend fun addSaleItem(id: String, saleItem: SaleItem) {
         findById(id)?.let {
             update(SaleWithId(it.id, it.saleItems + saleItem, it.status))
         }
     }
 
-    fun completeSale(id: String) {
+    suspend fun completeSale(id: String) {
         findById(id)?.let {
             update(SaleWithId(it.id, it.saleItems, SaleStatus.Completed))
         }
     }
 
-    fun cancelSale(id: String) {
+    suspend fun cancelSale(id: String) {
         findById(id)?.let {
             update(SaleWithId(it.id, it.saleItems, SaleStatus.Cancelled))
         }

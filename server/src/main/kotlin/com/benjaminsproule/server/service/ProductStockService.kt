@@ -7,27 +7,27 @@ import com.benjaminsproule.server.model.ProductStockWithId
 
 class ProductStockService(private val dao: ProductStockDao, private val materialStockDao: MaterialStockDao) :
     Service<ProductStock, ProductStockWithId> {
-    override fun create(productStock: ProductStock): ProductStockWithId {
+    override suspend fun save(productStock: ProductStock): ProductStockWithId {
         return dao.save(productStock)
     }
 
-    override fun update(productStock: ProductStockWithId): ProductStockWithId {
+    override suspend fun update(productStock: ProductStockWithId): ProductStockWithId {
         return dao.update(productStock)
     }
 
-    override fun findAll(): List<ProductStockWithId> {
+    override suspend fun findAll(): List<ProductStockWithId> {
         return dao.findAll()
     }
 
-    override fun findById(id: String): ProductStockWithId? {
+    override suspend fun findById(id: String): ProductStockWithId? {
         return dao.findById(id)
     }
 
-    override fun delete(id: String) {
+    override suspend fun delete(id: String) {
         dao.delete(id)
     }
 
-    fun addStock(productId: String, quantity: Int) {
+    suspend fun addStock(productId: String, quantity: Int) {
         dao.findByProductId(productId)?.let {
             it.product.materials.forEach { material ->
                 materialStockDao.findByMaterialId(material.id)?.let { materialStock ->

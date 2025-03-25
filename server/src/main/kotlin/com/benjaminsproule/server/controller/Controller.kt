@@ -1,8 +1,8 @@
-package com.benjaminsproule.server.service
+package com.benjaminsproule.server.controller
 
 import com.benjaminsproule.server.model.WithId
 
-interface Service<T, I : WithId<T>> {
+interface Controller<T, I : WithId<T>> {
     suspend fun save(t: T): I
 
     suspend fun update(i: I): I
