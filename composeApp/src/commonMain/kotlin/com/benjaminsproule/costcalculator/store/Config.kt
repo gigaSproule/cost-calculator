@@ -1,7 +1,9 @@
 package com.benjaminsproule.costcalculator.store
 
+import kotlinx.serialization.Serializable
 import com.benjaminsproule.costcalculator.calculator.Config as CalculatorConfig
 
+@Serializable
 data class Config(
     override val markupPercentage: Float = ConfigDefaults.MARKUP_PERCENTAGE,
     override val hourlyRate: Float = ConfigDefaults.MINIMUM_WAGE,

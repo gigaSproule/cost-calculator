@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class StoredMaterial(
     // TODO: Make this multiplatform
 //    val id: String = UUID.randomUUID().toString(),
-    val id: String = "UUID.randomUUID().toString()",
+    val id: String = getUUID(),
     var name: String = StoredMaterialDefaults.NAME,
     var quantityPerPack: Float = StoredMaterialDefaults.QUANTITY_PER_PACK,
     var pricePerPack: Float = StoredMaterialDefaults.PRICE_PER_PACK,
