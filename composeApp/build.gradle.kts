@@ -34,17 +34,9 @@ kotlin {
 
 //    wasmJs { browser() }
 
-//    applyDefaultHierarchyTemplate()
-
     sourceSets {
-//        all {
-//            languageSettings {
-//                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
-//            }
-//        }
 
         commonMain.dependencies {
-//            implementation(project.dependencies.platform(libs.androidx.compose.bom))
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
@@ -52,9 +44,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.kotlinx.serialization.json)
-//            implementation(libs.androidx.navigation.fragment.ktx)
-//            implementation(libs.androidx.navigation.ui.ktx)
-//            implementation(libs.androidx.navigation.compose)
             implementation(libs.compose.lifecycle.viewmodel.compose)
             implementation(libs.jetbrains.androidx.navigation.compose)
         }
@@ -64,8 +53,6 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
-//            api("androidx.appcompat:appcompat:1.6.1")
-//            api("androidx.core:core-ktx:1.12.0")
         }
 
         val desktopMain by getting
