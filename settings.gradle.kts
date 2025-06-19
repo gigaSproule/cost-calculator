@@ -13,5 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Cost Calculator"
-include(":app")
+rootProject.name = "CostCalculator"
+//include(":androidApp")
+//include(":desktopApp")
+include(":composeApp")
