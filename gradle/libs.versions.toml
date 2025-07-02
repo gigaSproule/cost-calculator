@@ -15,7 +15,7 @@ ktoml = "0.7.0"
 ktx = "1.16.0"
 lifecycle-runtime-ktx = "2.9.1"
 lifecycle-viewmodel-compose = "2.9.1"
-navigation = "2.9.0"
+navigation = "2.9.1"
 # Replace jetbrainsNavigation with navigation when released
 jetbrains-navigation = "2.9.0-beta03"
 
