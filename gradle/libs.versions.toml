@@ -2,7 +2,7 @@
 activity-compose = "1.10.1"
 androidx-espressoCore = "3.6.1"
 androidx-junit = "1.2.1"
-android-gradle-plugin = "8.11.0"
+android-gradle-plugin = "8.11.1"
 compose = "1.8.2"
 compose-bom = "2025.06.01"
 compose-hot-reload = "1.0.0-beta03"
