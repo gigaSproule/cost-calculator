@@ -90,13 +90,13 @@ kotlin {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
     namespace = "com.benjaminsproule.costcalculator"
 
     defaultConfig {
         applicationId = "com.benjaminsproule.costcalculator"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 7
         versionName = "0.0.3"
 
@@ -106,7 +106,7 @@ android {
         }
     }
     lint {
-        targetSdk = 35
+        targetSdk = 36
     }
     buildTypes {
         release {
