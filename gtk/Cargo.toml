@@ -10,5 +10,5 @@ adw = { version = "0.8.0", package = "libadwaita", features = ["gtk_v4_6"] }
 confy = "1.0.0"
 dirs = "6.0.0"
 gtk4 = { version = "0.10.0", features = ["v4_6"] }
-serde = { version = "1.0.223", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 calculators = { path = "../calculators" }
