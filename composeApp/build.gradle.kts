@@ -1,8 +1,11 @@
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
+//    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.android.multiplatform.library)
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
     id(libs.plugins.compose.hot.reload.get().pluginId)
@@ -12,7 +15,19 @@ plugins {
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    androidTarget()
+
+    androidLibrary {
+        namespace = "com.benjaminsproule.costcalculatorlibrary"
+        compileSdk = 36
+
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_25)
+        }
+
+        androidResources {
+            enable = true
+        }
+    }
 
 //    listOf(
 //        iosX64(),
@@ -49,8 +64,6 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
         }
@@ -87,58 +100,15 @@ kotlin {
 //            implementation(compose.desktop.uiTestJUnit4)
 //        }
     }
-}
 
-android {
-    compileSdk = 36
-    namespace = "com.benjaminsproule.costcalculator"
-
-    defaultConfig {
-        applicationId = "com.benjaminsproule.costcalculator"
-        minSdk = 29
-        targetSdk = 36
-        versionCode = 7
-        versionName = "0.0.3"
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-    }
-    lint {
-        targetSdk = 36
-    }
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "androidMain/proguard-rules.pro"
-            )
-            ndk {
-                debugSymbolLevel = "FULL"
-            }
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
-    }
-    kotlin {
-        jvmToolchain(25)
-    }
-    buildFeatures {
-        compose = true
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+    dependencies {
+//        implementation(projects.composeApp)
+        implementation(libs.compose.ui.tooling.preview)
     }
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
+    androidRuntimeClasspath(compose.uiTooling)
 }
 
 compose.desktop {
