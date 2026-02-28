@@ -41,7 +41,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "androidMain/proguard-rules.pro"
+                "src/main/proguard-rules.pro"
             )
             ndk {
                 debugSymbolLevel = "FULL"
