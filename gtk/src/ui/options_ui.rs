@@ -1,7 +1,7 @@
 use adw::ApplicationWindow;
 use gtk4::{glib::clone, prelude::*};
 
-use crate::store::config::{self, get_config, ConfigImpl};
+use crate::store::config::{self, ConfigImpl, get_config};
 
 pub(crate) fn options(window: &ApplicationWindow) -> gtk4::Grid {
     let existing_config = get_config();

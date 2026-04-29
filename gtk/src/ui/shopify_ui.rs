@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use gtk4::{glib::clone, prelude::*, Align};
+use gtk4::{Align, glib::clone, prelude::*};
 
 use crate::{store::config::get_config, store::materials::get_materials};
 use calculators::shopify_calculator::{ShopifyCalculator, ShopifyCharge, ShopifySale};

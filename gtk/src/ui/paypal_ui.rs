@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use crate::{store::config::get_config, store::materials::get_materials};
 use calculators::paypal_calculator::{PaypalCalculator, PaypalCharge, PaypalLocation, PaypalSale};
 use calculators::{Calculator, Material};
-use gtk4::{glib::clone, prelude::*, Align};
+use gtk4::{Align, glib::clone, prelude::*};
 
 pub(crate) fn paypal_options() -> gtk4::Box {
     let container = gtk4::Box::new(gtk4::Orientation::Vertical, 0);
