@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use gtk4::{glib::clone, prelude::*, Align};
+use gtk4::{Align, glib::clone, prelude::*};
 
 use calculators::sumup_calculator::{
     PaymentOption, SubscriptionOption, SumUpCalculator, SumUpCharge, SumUpSale,

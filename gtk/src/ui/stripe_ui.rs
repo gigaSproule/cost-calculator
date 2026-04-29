@@ -1,4 +1,4 @@
-use gtk4::{glib::clone, prelude::*, Align};
+use gtk4::{Align, glib::clone, prelude::*};
 use std::sync::{Arc, Mutex};
 
 use crate::store::config::get_config;

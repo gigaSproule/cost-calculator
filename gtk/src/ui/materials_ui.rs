@@ -1,9 +1,9 @@
 use std::sync::{Arc, Mutex};
 
-use adw::{glib::GString, ApplicationWindow};
+use adw::{ApplicationWindow, glib::GString};
 use gtk4::{glib::clone, prelude::*};
 
-use crate::{store, store::materials::get_materials, store::materials::StoredMaterial};
+use crate::{store, store::materials::StoredMaterial, store::materials::get_materials};
 
 pub(crate) fn materials(window: &ApplicationWindow) -> gtk4::Grid {
     let mut existing_materials = get_materials();
