@@ -31,7 +31,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.sale)
+                    "${config.currency}%.2f".format(saleBreakdown.sale)
                 }
             )
         }
@@ -45,7 +45,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.deliveryCosts)
+                    "${config.currency}%.2f".format(saleBreakdown.deliveryCosts)
                 }
             )
         }
@@ -57,7 +57,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.transactionCost)
+                    "${config.currency}%.2f".format(saleBreakdown.transactionCost)
                 }
             )
         }
@@ -72,7 +72,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.paymentProcessingCost)
+                    "${config.currency}%.2f".format(saleBreakdown.paymentProcessingCost)
                 }
             )
         }
@@ -84,7 +84,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.offsiteAdsCost)
+                    "${config.currency}%.2f".format(saleBreakdown.offsiteAdsCost)
                 }
             )
         }
@@ -96,7 +96,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.regulatoryOperatingFee)
+                    "${config.currency}%.2f".format(saleBreakdown.regulatoryOperatingFee)
                 }
             )
         }
@@ -108,7 +108,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.vatPaidByBuyer)
+                    "${config.currency}%.2f".format(saleBreakdown.vatPaidByBuyer)
                 }
             )
         }
@@ -120,7 +120,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.vatOnSellerFees)
+                    "${config.currency}%.2f".format(saleBreakdown.vatOnSellerFees)
                 }
             )
         }
@@ -132,7 +132,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.totalFees)
+                    "${config.currency}%.2f".format(saleBreakdown.totalFees)
                 }
             )
         }
@@ -144,7 +144,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.totalFeesWithVat)
+                    "${config.currency}%.2f".format(saleBreakdown.totalFeesWithVat)
                 }
             )
         }
@@ -156,7 +156,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.tax)
+                    "${config.currency}%.2f".format(saleBreakdown.tax)
                 }
             )
         }
@@ -168,7 +168,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "${config.currency}%.2f".format(saleBreakdown!!.revenue)
+                    "${config.currency}%.2f".format(saleBreakdown.revenue)
                 }
             )
         }
@@ -180,7 +180,7 @@ fun DisplaySaleBreakdown(
                 if (saleBreakdown == null) {
                     ""
                 } else {
-                    "%.2f%%".format(saleBreakdown!!.percentageKept)
+                    "%.2f%%".format(saleBreakdown.percentageKept)
                 }
             )
         }
@@ -193,8 +193,8 @@ fun DisplaySaleBreakdown(
                     ""
                 } else {
                     "%d:%02d".format(
-                        saleBreakdown!!.maxWorkingHours.toInt(),
-                        ((saleBreakdown!!.maxWorkingHours - (saleBreakdown!!.maxWorkingHours.toInt())) * 60).toInt()
+                        saleBreakdown.maxWorkingHours.toInt(),
+                        ((saleBreakdown.maxWorkingHours - (saleBreakdown.maxWorkingHours.toInt())) * 60).toInt()
                     )
                 }
             )
