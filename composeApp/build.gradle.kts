@@ -18,7 +18,7 @@ kotlin {
 
     androidLibrary {
         namespace = "com.benjaminsproule.costcalculatorlibrary"
-        compileSdk = 36
+        compileSdk = 37
 
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_25)
